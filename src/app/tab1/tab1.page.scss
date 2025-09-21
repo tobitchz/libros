@@ -1,0 +1,17 @@
+.libro-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.portada {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto; // centra la imagen horizontalmente
+}
+
+.centrado {
+  text-align: center;
+}

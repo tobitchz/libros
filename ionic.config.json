@@ -1,0 +1,8 @@
+{
+  "name": "libros-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular",
+  "id": "90800701"
+}
