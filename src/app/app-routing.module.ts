@@ -4,7 +4,7 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 const routes: Routes = [
   {
     path: '', // al iniciar
-    redirectTo: 'login', //ir a vista de login al inicio
+    redirectTo: 'tabs', //ir a vista de login al inicio
     pathMatch: 'full'
   },
   {
@@ -20,14 +20,13 @@ const routes: Routes = [
     loadChildren: () => import('./libro/libro.module').then( m => m.LibroPageModule)
   },
   {
-    path: 'tabs',
-    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+    path: 'pestania-config',
+    loadChildren: () => import('./pestania-config/pestania-config-routing.module').then(m => m.PestaniaConfigPageRoutingModule)
   },
-
-   // {
-   // path: '',
-   // loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
-  //}
+  {
+    path: '',
+    loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule)
+  }
 
 ];
 
