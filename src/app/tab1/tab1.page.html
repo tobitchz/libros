@@ -7,6 +7,7 @@
   </ion-toolbar>
 </ion-header>
 
+
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
@@ -18,29 +19,41 @@
   <!--  CARD  -->
 
 
-<ion-grid [fixed]="true">
-  <ion-row>
-    <ion-col size="4" *ngFor="let libro of libros">
-      <ion-card class="libro-card" (click)="verDetalle(libro)">
-        <img *ngIf="libro.portada" [src]="libro.portada" class="portada" />
-        <ion-card-header>
-          <ion-card-title class="centrado">{{ libro.titulo }}</ion-card-title>
-          <ion-card-subtitle class="centrado">{{ libro.autor }}</ion-card-subtitle>
-        </ion-card-header>
-      </ion-card>
-    </ion-col>
-  </ion-row>
-</ion-grid>
-
-
-
-  
+  <ion-grid [fixed]="true">
+    <ion-row>
+      <ion-col size="4" *ngFor="let libro of libros">
+        <ion-card class="libro-card" (click)="verDetalle(libro)">
+          <img *ngIf="libro.portada" [src]="libro.portada" class="portada" />
+          <ion-card-header>
+            <ion-card-title class="centrado">{{ libro.titulo }}</ion-card-title>
+            <ion-card-subtitle class="centrado">{{ libro.autor }}</ion-card-subtitle>
+          </ion-card-header>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
 
 
 
 
-    <!--  CARD  -->
+
+
+
+
+  <!--  CARD  -->
+
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" >
+    <ion-fab-button id="open-modal" >
+      <ion-icon name="search"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  <ion-modal trigger="open-modal">
+    <ng-template>
+      <ion-searchbar [debounce]="100" aria-placeholder="Buscar"></ion-searchbar> 
+    </ng-template>
+  </ion-modal>
 
 
 
