@@ -39,7 +39,7 @@ export class LoginPage implements OnInit {
       this.loading.dismiss()
     }
 
-    this.router.navigateByUrl('/tabs/tab2');
+    this.router.navigateByUrl('/tabs/usuario');
 
   }
 }

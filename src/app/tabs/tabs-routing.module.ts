@@ -13,8 +13,8 @@ const routes: Routes = [
         loadChildren: () => import('../tab1/tab1.module').then(m => m.Tab1PageModule)
       },
       {
-        path: 'tab2',
-        loadChildren: () => import('../tab2/tab2.module').then(m => m.Tab2PageModule)
+        path: 'usuario',
+        loadChildren: () => import('../usuario/usuario.module').then(m => m.UsuarioPageModule)
       },
       {
         path: 'pestania-config',
