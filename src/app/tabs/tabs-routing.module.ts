@@ -1,30 +1,35 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
+import { authGuard } from '../auth/auth-guard';
 
 const routes: Routes = [
   {
-    path: '',
+    path: 'tabs',
     component: TabsPage,
     children: [
       {
         path: 'tab1',
         loadChildren: () => import('../tab1/tab1.module').then(m => m.Tab1PageModule)
       },
-       {
+      {
+        path: 'tab2',
+        loadChildren: () => import('../tab2/tab2.module').then(m => m.Tab2PageModule)
+      },
+      {
         path: 'pestania-config',
-        loadChildren: () => import('../pestania-config/pestania-config.module').then( m => m.PestaniaConfigPageModule)
+        loadChildren: () => import('../pestania-config/pestania-config.module').then(m => m.PestaniaConfigPageModule)
       },
       {
         path: '',
-        redirectTo: 'tab1',
+        redirectTo: '/tabs/tab1',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: 'tab1',
+    redirectTo: '/tabs/tab1',
     pathMatch: 'full'
   }
 ];
@@ -32,4 +37,4 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forChild(routes)],
 })
-export class TabsPageRoutingModule {}
+export class TabsPageRoutingModule { }
