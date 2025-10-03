@@ -2,10 +2,10 @@ import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UsuarioPage } from './usuario.page';
+import { FavoritosPage } from './favoritos.page';
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
-import { UsuarioPageRoutingModule } from './usuario-routing.module';
+import { FavoritosPageRoutingModule } from './favoritos-routing.module';
 
 @NgModule({
   imports: [
@@ -13,8 +13,8 @@ import { UsuarioPageRoutingModule } from './usuario-routing.module';
     CommonModule,
     FormsModule,
     ExploreContainerComponentModule,
-    UsuarioPageRoutingModule
+    FavoritosPageRoutingModule
   ],
-  declarations: [UsuarioPage]
+  declarations: [FavoritosPage]
 })
-export class UsuarioPageModule {}
+export class FavoritosPageModule {}

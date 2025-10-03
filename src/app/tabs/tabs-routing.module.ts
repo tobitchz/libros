@@ -9,27 +9,31 @@ const routes: Routes = [
     component: TabsPage,
     children: [
       {
-        path: 'tab1',
-        loadChildren: () => import('../tab1/tab1.module').then(m => m.Tab1PageModule)
+        path: 'destacados',
+        loadChildren: () => import('../destacados/destacados.module').then(m => m.DestacadosPageModule)
       },
       {
-        path: 'usuario',
-        loadChildren: () => import('../usuario/usuario.module').then(m => m.UsuarioPageModule)
+        path: 'buscar',
+        loadChildren: () => import('../buscar/buscar.module').then(m => m.BuscarPageModule)
       },
       {
-        path: 'pestania-config',
+        path: 'config',
         loadChildren: () => import('../pestania-config/pestania-config.module').then(m => m.PestaniaConfigPageModule)
       },
       {
+        path: 'favoritos',
+        loadChildren: () => import('../favoritos/favoritos.module').then(m => m.FavoritosPageModule)
+      },
+      {
         path: '',
-        redirectTo: '/tabs/tab1',
+        redirectTo: '/tabs/destacados',
         pathMatch: 'full'
       }
     ]
   },
   {
     path: '',
-    redirectTo: '/tabs/tab1',
+    redirectTo: '/tabs/destacados',
     pathMatch: 'full'
   }
 ];
