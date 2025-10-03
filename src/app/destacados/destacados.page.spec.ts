@@ -3,19 +3,19 @@ import { IonicModule } from '@ionic/angular';
 
 import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
 
-import { PestaniaConfigPage } from './pestania-config.page';
+import { DestacadosPage } from './destacados.page';
 
-describe('PestaniaConfigPage', () => {
-  let component: PestaniaConfigPage;
-  let fixture: ComponentFixture<PestaniaConfigPage>;
+describe('DestacadosPage', () => {
+  let component: DestacadosPage;
+  let fixture: ComponentFixture<DestacadosPage>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [PestaniaConfigPage],
+      declarations: [DestacadosPage],
       imports: [IonicModule.forRoot(), ExploreContainerComponentModule]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(PestaniaConfigPage);
+    fixture = TestBed.createComponent(DestacadosPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
