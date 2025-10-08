@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { Auth } from '../services/auth';
+import { AuthService } from '../services/auth';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
+
 
 @Component({
   selector: 'app-login',
@@ -11,35 +12,42 @@ import { LoadingController } from '@ionic/angular';
 })
 export class LoginPage implements OnInit {
   credentials = { username: '', password: '' };
-  errorMessage: string = '';
+  errorMessage = '';
   loading: HTMLIonLoadingElement | null = null;
 
   constructor(
-    private authService: Auth,
+    private authService: AuthService,
     private router: Router,
     private loadingController: LoadingController
-  ) { }
+  ) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
-  /** Autentica las credenciales con el servicio Auth y muestra indicador de carga mientras se procesan */
   async login() {
-    this.loading = await this.loadingController.create(
-      { message: 'Iniciando sesión...', }
-    );
+    this.loading = await this.loadingController.create({
+      message: 'Iniciando sesión...',
+    });
     await this.loading.present();
 
-
-    const user = await this.authService.registrarUsuario(this.credentials.username,this.credentials.password).catch((error) => {
-      console.log(error);
-      this.loading?.dismiss()
-    })
-
-    if(user){
-      this.loading.dismiss()
+    try {
+      const user = await this.authService.iniciarSesion(
+        this.credentials.username,
+        this.credentials.password
+      );
+      if (user) {
+        await this.loading.dismiss();
+        this.router.navigateByUrl('/tabs').then(() => {
+  const firstInput = document.querySelector('ion-input') as HTMLIonInputElement;
+  if (firstInput) {
+    firstInput.setFocus(); // método propio de ion-input
+  }
+});
+      }
+    } catch (error) {
+      console.error(error);
+      this.errorMessage = 'Correo o contraseña incorrectos';
+      await this.loading.dismiss();
     }
-
-    this.router.navigateByUrl('/tabs/favoritos');
-
   }
 }
+

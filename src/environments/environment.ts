@@ -1,6 +1,11 @@
-// This file can be replaced during build by using the `fileReplacements` array.
-// `ng build` replaces `environment.ts` with `environment.prod.ts`.
-// The list of file replacements can be found in `angular.json`.
+
+import { initializeApp } from "firebase/app";
+import { getAuth} from "firebase/auth";
+
+import { Router } from "@angular/router";
+import { Injectable } from "@angular/core";
+
+
 
 export const environment = {
   production: false,
@@ -25,3 +30,23 @@ export const environment = {
  * on performance if an error is thrown.
  */
 // import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
+
+
+
+// Initialize Firebase
+const app = initializeApp(environment.firebaseConfig);
+
+const auth = getAuth();
+
+export var currentUserId:any
+
+@Injectable({
+  providedIn:'root'
+})
+
+
+export class ControladorR {
+  constructor(private ruta:Router){}
+}
+
+//al final no lo use (todo va en authService)
