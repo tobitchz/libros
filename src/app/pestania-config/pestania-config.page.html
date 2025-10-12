@@ -1,16 +1,64 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Configuración</ion-title>
+    <ion-title>Ajustes</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Pestaña Configuración</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      Contenido de tu nueva pestaña.
-    </ion-card-content>
-  </ion-card>
+
+  <ion-item>
+    <ion-avatar slot="start">
+      <img src="https://cdn-icons-png.flaticon.com/512/17/17004.png" alt="avatar" />
+    </ion-avatar>
+    <ion-label>
+      <h2>@jacoBella</h2>
+      <p>jaco@gmail.com</p>
+    </ion-label>
+   
+  </ion-item>
+
+
+
+
+
+  <ion-list inset>
+    <ion-list-header>Cuenta</ion-list-header>
+
+    <ion-item button detail>
+      <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+      <ion-label>Cerrar sesion, eliminar cuenta</ion-label>
+    </ion-item>
+  </ion-list>
+
+
+
+
+   <ion-list inset>
+    <ion-list-header>Apariencia</ion-list-header>
+
+    <ion-item button detail="false" (click)="openModal()">
+      <ion-icon name="color-palette-outline" slot="start"></ion-icon>
+      <ion-label>Tema</ion-label>
+      <ion-note slot="end">Oscuro</ion-note>
+    </ion-item>
+  </ion-list>
+
+
+
+
+<ion-list inset>
+    <ion-list-header>Acerca de</ion-list-header>
+
+    <ion-item lines="none">
+      <ion-icon name="information-circle-outline" slot="start"></ion-icon>
+      <ion-label>
+        <h3>Libros Grupo 3</h3>
+        <p>Versión 1.0.0</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+
+
+
+
 </ion-content>

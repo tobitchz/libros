@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { ModalTemaComponent } from './modal-tema/modal-tema.component';
 
 @Component({
   selector: 'app-pestania-config',
@@ -7,13 +9,36 @@ import { Component, OnInit } from '@angular/core';
   standalone: false
 })
 export class PestaniaConfigPage implements OnInit {
-
-  constructor() { }
-
-
+   seleccionado = 'system'
+  constructor(private modalCtrl: ModalController) { }
   
-    
 
+
+
+ 
+  async openModal() {
+
+    
+    const modal = await this.modalCtrl.create({
+      component: ModalTemaComponent
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss();
+    console.log('Modal cerrado con:', data, role);
+  }
+
+
+
+  editarPerfil(){
+    console.log("se toco editar perfil")
+  }
+    
+  
+  cerrarSesion(){
+    console.log("la sesion se cerro")
+  }
   ngOnInit() {
   }
 
