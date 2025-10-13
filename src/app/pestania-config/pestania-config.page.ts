@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ModalTemaComponent } from './modal-tema/modal-tema.component';
+import { ModalCuentaComponent } from './modal-cuenta/modal-cuenta.component';
+import { Router } from '@angular/router';
+import { AuthService } from '.././services/auth';
+
 
 @Component({
   selector: 'app-pestania-config',
@@ -9,37 +13,77 @@ import { ModalTemaComponent } from './modal-tema/modal-tema.component';
   standalone: false
 })
 export class PestaniaConfigPage implements OnInit {
-   seleccionado = 'system'
-  constructor(private modalCtrl: ModalController) { }
-  
+
+  nombreUsuario: string = '';
+  email: string = '';
+
+  constructor(private modalCtrl: ModalController,
+        private router: Router,
+    private authService: AuthService
+  ) { }
 
 
+  async openTemaModal() {
 
- 
-  async openModal() {
-
-    
-    const modal = await this.modalCtrl.create({
-      component: ModalTemaComponent
+    const temaModal = await this.modalCtrl.create({
+      component: ModalTemaComponent,
+      breakpoints:[0, 0.3, 0.6, 1],
+      initialBreakpoint: 0.6,
+      handle: true,
+      backdropDismiss: true
     });
 
-    await modal.present();
+    await temaModal.present();
 
-    const { data, role } = await modal.onWillDismiss();
+    const { data, role } = await temaModal.onWillDismiss();
     console.log('Modal cerrado con:', data, role);
   }
 
 
 
-  editarPerfil(){
-    console.log("se toco editar perfil")
+
+    async openCuentaModal() {
+
+    const cuentaModal = await this.modalCtrl.create({
+      component: ModalCuentaComponent,
+      breakpoints:[0, 0.3, 0.6, 1],
+      initialBreakpoint: 0.6,
+      handle: true,
+      backdropDismiss: true
+    });
+
+    await cuentaModal.present();
+
+    const { data, role } = await cuentaModal.onWillDismiss();
+    console.log('Modal cerrado con:', data, role);
   }
-    
+
+
+ 
+
+
+
   
-  cerrarSesion(){
-    console.log("la sesion se cerro")
-  }
-  ngOnInit() {
+
+
+  async ngOnInit() {
+
+     const user = await this.authService.obtenerUsuario();
+
+    if (user) {
+      if (user.email) {
+        this.email = user.email;
+      }
+
+      if (user.displayName) {
+        this.nombreUsuario = user.displayName;
+      } else {
+        if (user.email) {
+          const partes = user.email.split('@');
+          this.nombreUsuario = partes[0];
+        }
+      }
+    }
   }
 
 }

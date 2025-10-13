@@ -16,7 +16,7 @@ export class ModalTemaComponent {
     this.seleccionado = opcion;
   }
 
-    cancel() {
+  cancel() {
     this.modalCtrl.dismiss();
   }
 

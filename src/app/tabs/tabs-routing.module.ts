@@ -18,7 +18,7 @@ const routes: Routes = [
       },
       {
         path: 'config',
-        loadChildren: () => import('../pestania-config/pestania-config.module').then(m => m.PestaniaConfigPageModule)
+        loadChildren: () => import('../pestania-config/pestania-config.module').then(m => m.PestaniaConfigModule)
       },
       {
         path: 'favoritos',
