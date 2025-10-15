@@ -1,6 +1,14 @@
 <ion-header>
   <ion-toolbar>
+
+    <ion-row>  
     <ion-title>Registrarse</ion-title>
+     <ion-col size="auto">
+        <ion-button routerLink="" title="Home">
+          <ion-icon name="arrow-back"></ion-icon>
+        </ion-button>
+      </ion-col>
+    </ion-row>
   </ion-toolbar>
 </ion-header>
 
@@ -13,6 +21,11 @@
   <ion-item>
     <ion-label position="floating">Contraseña</ion-label>
     <ion-input type="password" [(ngModel)]="credentials.password"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="floating">Confirmar contraseña</ion-label>
+    <ion-input type="password" [(ngModel)]="credentials.confirmPassword"></ion-input>
   </ion-item>
 
   <ion-text color="danger" *ngIf="errorMessage">

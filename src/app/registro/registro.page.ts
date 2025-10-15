@@ -19,7 +19,7 @@ import { LoadingController } from '@ionic/angular';
 export class RegistroPage {
 
   /** Credenciales ingresadas por el usuario. */
-  credentials = { email: '', password: '' };
+  credentials = { email: '', password: '' , confirmPassword: ''};
   /** Mensaje de error mostrado si el registro falla. */
   errorMessage = '';
   /** Controlador del indicador de carga actual. */
@@ -45,6 +45,17 @@ export class RegistroPage {
    * Muestra un indicador de carga durante el proceso y redirige al login al finalizar.
    */
   async registro() {
+
+    if (!this.credentials.email || !this.credentials.password || !this.credentials.confirmPassword) {
+      this.errorMessage = 'Debe completar todos los campos';
+      return;
+    }
+
+    if (this.credentials.password !== this.credentials.confirmPassword) {
+      this.errorMessage = 'Las contraseñas no coinciden';
+      return;
+    }
+    
     this.loading = await this.loadingController.create({
       message: 'Creando usuario...',
     });
