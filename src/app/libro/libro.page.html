@@ -12,8 +12,8 @@
            alt="Portada del libro" class="portada"/>
       <ion-card-header>
         <ion-card-title>{{ libro.title }}</ion-card-title>
-        <ion-card-subtitle *ngIf="libro.description">
-          {{ libro.description?.value || libro.description }}
+        <ion-card-subtitle *ngIf="libro.traduccion; else cargando">
+          {{ libro.traduccion }}
         </ion-card-subtitle>
         
       </ion-card-header>
