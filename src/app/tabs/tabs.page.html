@@ -1,6 +1,6 @@
 <ion-tabs>
 
-  <ion-tab-bar slot="bottom">
+  <ion-tab-bar slot="top">
 
     <ion-tab-button tab="destacados" href="/tabs/destacados">
       <ion-icon aria-hidden="true" name="book"></ion-icon>
@@ -20,12 +20,6 @@
     <ion-tab-button tab="config" href="/tabs/config">
       <ion-icon aria-hidden="true" name="settings"></ion-icon>
       <ion-label>Config</ion-label>
-    </ion-tab-button>
-
-    <!-- Cerrar sesión -->
-    <ion-tab-button (click)="logout()">
-      <ion-icon name="log-out-outline"></ion-icon>
-      <ion-label>Salir</ion-label>
     </ion-tab-button>
 
   </ion-tab-bar>
