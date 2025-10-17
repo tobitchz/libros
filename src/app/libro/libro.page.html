@@ -1,29 +1,31 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ libro?.title }}</ion-title>
+    <ion-button fill="clear" style="position: absolute; top: 0px; left: 0px; z-index: 10;" href="/tabs/destacados">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </ion-button>
+    <ion-title style="text-align: center;">{{ libro?.title }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
   <ng-container *ngIf="libro; else cargando">
     <ion-card>
-      <img *ngIf="libro.covers?.length" 
-           [src]="'https://covers.openlibrary.org/b/id/' + libro.covers[0] + '-L.jpg'" 
-           alt="Portada del libro" class="portada"/>
+      <img *ngIf="libro.covers?.length" [src]="'https://covers.openlibrary.org/b/id/' + libro.covers[0] + '-L.jpg'"
+        alt="Portada del libro" class="portada" />
       <ion-card-header>
         <ion-card-title>{{ libro.title }}</ion-card-title>
         <ion-card-subtitle *ngIf="libro.description">
           {{ libro.description?.value || libro.description }}
         </ion-card-subtitle>
-        
+
       </ion-card-header>
     </ion-card>
   </ng-container>
 
 
   <ion-button expand="block" (click)="mostrarAlerta()">
-  Comprar
-</ion-button>
+    Comprar
+  </ion-button>
 
   <ng-template #cargando>
     <ion-spinner></ion-spinner>

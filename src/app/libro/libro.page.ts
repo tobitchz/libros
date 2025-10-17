@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 
 
+
 @Component({
   selector: 'app-libro',
   templateUrl: './libro.page.html',
@@ -15,13 +16,13 @@ import { AlertController } from '@ionic/angular';
 export class LibroPage implements OnInit {
   libroId: string | null = null;
   libro: any;
-  
+
 
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private alertCtrl: AlertController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
@@ -49,59 +50,59 @@ export class LibroPage implements OnInit {
 
 
   async getAutoresSlug(): Promise<string> {
-  if (!this.libro || !this.libro.authors) return 'desconocido';
+    if (!this.libro || !this.libro.authors) return 'desconocido';
 
 
-  // array de Promesas para cada autor
-  const promesas = this.libro.authors.map(async (a: any) => {
-    const fullKey = a.author?.key;
-    if (fullKey) {
-      try {
-        const authorId = fullKey.split('/').pop(); // solo la KEY del autor 
-        const authorData: any = await this.http.get(`https://openlibrary.org/authors/${authorId}.json`).toPromise();
-        return authorData.name.toLowerCase().normalize('NFD')
-          //.replace(/[\u0300-\u036f]/g, '')   // quitar acentos
-          .replace(/\s+/g, '-');             // espacios a guiones
-      } catch (e) {
-        console.error('Error cargando autor', a.key, e);
-        return '';
+    // array de Promesas para cada autor
+    const promesas = this.libro.authors.map(async (a: any) => {
+      const fullKey = a.author?.key;
+      if (fullKey) {
+        try {
+          const authorId = fullKey.split('/').pop(); // solo la KEY del autor 
+          const authorData: any = await this.http.get(`https://openlibrary.org/authors/${authorId}.json`).toPromise();
+          return authorData.name.toLowerCase().normalize('NFD')
+            //.replace(/[\u0300-\u036f]/g, '')   // quitar acentos
+            .replace(/\s+/g, '-');             // espacios a guiones
+        } catch (e) {
+          console.error('Error cargando autor', a.key, e);
+          return '';
+        }
       }
-    }
-    return '';
-  });
+      return '';
+    });
 
-  const nombres = await Promise.all(promesas);
-  return nombres.filter(n => n.trim() !== '').join('-');
-}
+    const nombres = await Promise.all(promesas);
+    return nombres.filter(n => n.trim() !== '').join('-');
+  }
 
 
 
   async mostrarAlerta() {
-     const titulo = this.libro?.title || "libro"; // libro slug
-     const autor = await this.getAutoresSlug(); // autor slug
+    const titulo = this.libro?.title || "libro"; // libro slug
+    const autor = await this.getAutoresSlug(); // autor slug
 
     const alert = await this.alertCtrl.create({
-     header: 'COMPRAR',
-    message: 'Ir a paginas de compra',
-    buttons: [
-   
-      {
-        text: 'Mercado Libre',
-        handler: () => {
-          // Abrir el link en una nueva pestaña
-          window.open('https://listado.mercadolibre.com.ar/'+ titulo +'-'+ autor);
-        }
-      },
-      {
-        text: 'Amazon',
-        handler: () => {
-          // Abrir el link en una nueva pestaña
-          window.open('https://www.amazon.es/s?k='+ titulo+'-'+ autor);
-        }
-      }
-    ]
-  });
+      header: 'COMPRAR',
+      message: 'Ir a paginas de compra',
+      buttons: [
 
-  await alert.present();
-}
+        {
+          text: 'Mercado Libre',
+          handler: () => {
+            // Abrir el link en una nueva pestaña
+            window.open('https://listado.mercadolibre.com.ar/' + titulo + '-' + autor);
+          }
+        },
+        {
+          text: 'Amazon',
+          handler: () => {
+            // Abrir el link en una nueva pestaña
+            window.open('https://www.amazon.es/s?k=' + titulo + '-' + autor);
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
 }

@@ -1,16 +1,14 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Buscador</ion-title>
+    <ion-searchbar [debounce]="2000" (ionInput)="buscar($event)"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Pestaña de busqueda</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      Contenido de tu nueva pestaña.
-    </ion-card-content>
-  </ion-card>
+  <ion-content>
+  <ion-list>
+    <ion-item button *ngFor="let result of l"  (click)="respuesta($event)">
+      <ion-label>{{result.title}}</ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>
+
