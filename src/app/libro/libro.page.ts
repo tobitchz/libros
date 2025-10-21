@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
+import { ChangeDetectorRef } from '@angular/core';
+import { Translate } from '../services/translate';
+
+
 
 
 /**
@@ -27,11 +31,15 @@ export class LibroPage implements OnInit {
    * @param {ActivatedRoute} route - Módulo que permite acceder a los parámetros de la ruta actual.
    * @param {HttpClient} http - Cliente HTTP para obtener los datos del libro y del autor.
    * @param {AlertController} alertCtrl - Controlador para generar alertas en la interfaz.
+   * @param {ChangeDetectorRef} cdr - Fuerza actualización del template para la traducción
    */
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private cdr: ChangeDetectorRef,
+    private translate: Translate
+    
   ) {}
 
 
@@ -49,22 +57,30 @@ export class LibroPage implements OnInit {
   }
 
   /**
-   * Obtiene los datos detallados del libro desde la API de OpenLibrary.
+   * Obtiene los datos detallados del libro en español desde la API de OpenLibrary. 
    * @param {string} id - Identificador del libro (por ejemplo, "OL12345W").
    */
-  getLibroDetalle(id: string) {
-    const url = `https://openlibrary.org/works/${id}.json`;
+getLibroDetalle(id: string) {
+  const url = `https://openlibrary.org/works/${id}.json`;
 
-    this.http.get(url).subscribe({
-      next: (data) => {
-        this.libro = data;
-        console.log('Detalle del libro:', this.libro);
-      },
-      error: (err) => {
-        console.error('Error cargando detalle:', err);
+  this.http.get(url).subscribe({
+    next: (data) => {
+      this.libro = data;
+      console.log('Detalle del libro:', this.libro);
+
+      const texto = this.libro.description?.value || this.libro.description || this.libro.title;
+
+      if (texto) {
+        this.translate.traducir(texto).subscribe(traduccion => {
+          this.libro.traduccion = traduccion;
+          this.cdr.detectChanges();
+        });
       }
-    });
-  }
+    },
+    error: (err) => console.error('Error cargando detalle:', err)
+  });
+}
+  
 
 
   /**
@@ -82,7 +98,6 @@ export class LibroPage implements OnInit {
         const authorId = fullKey.split('/').pop(); 
         const authorData: any = await this.http.get(`https://openlibrary.org/authors/${authorId}.json`).toPromise();
         return authorData.name.toLowerCase().normalize('NFD')
-          //.replace(/[\u0300-\u036f]/g, '')   // quitar acentos
           .replace(/\s+/g, '-');
       } catch (e) {
         console.error('Error cargando autor', a.key, e);
