@@ -5,7 +5,7 @@ import { authGuard } from '../auth/auth-guard';
 
 const routes: Routes = [
   {
-    path: 'tabs',
+    path: '',
     component: TabsPage,
     children: [
       {
@@ -26,16 +26,16 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: '/tabs/destacados',
+        redirectTo: 'destacados',
         pathMatch: 'full'
       }
     ]
   },
-  {
-    path: '',
-    redirectTo: '/tabs/destacados',
-    pathMatch: 'full'
-  }
+  //{
+    //path: '',
+    //redirectTo: 'destacados',
+   // pathMatch: 'full'
+  //}
 ];
 
 @NgModule({

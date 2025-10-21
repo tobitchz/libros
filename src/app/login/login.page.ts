@@ -1,7 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { Auth } from '../services/auth';
+import { AuthService } from '../services/auth';
 import { Router } from '@angular/router';
 import { LoadingController } from '@ionic/angular';
+
+
+/**
+ * Componente encargado del inicio de sesión.
+ * Muestra el formulario de login y gestiona la autenticación del usuario.
+ */
 
 @Component({
   selector: 'app-login',
@@ -9,37 +15,61 @@ import { LoadingController } from '@ionic/angular';
   styleUrls: ['./login.page.scss'],
   standalone: false,
 })
+
+
 export class LoginPage implements OnInit {
+  /** Credenciales ingresadas por el usuario. */
   credentials = { username: '', password: '' };
-  errorMessage: string = '';
+  /** Mensaje de error mostrado en caso de fallo de autenticación. */
+  errorMessage = '';
+  /** Referencia al componente de carga mientras se realiza el inicio de sesión. */
   loading: HTMLIonLoadingElement | null = null;
 
+
+  /**
+   * @param authService Servicio de autenticación de Firebase.
+   * @param router Controlador de rutas de Angular.
+   * @param loadingController Controlador de carga de Ionic.
+   */
   constructor(
-    private authService: Auth,
+    private authService: AuthService,
     private router: Router,
     private loadingController: LoadingController
-  ) { }
+  ) {}
 
-  ngOnInit() { }
+  /** Inicializa el componente. */
+  ngOnInit() {}
 
-  /** Autentica las credenciales con el servicio Auth y muestra indicador de carga mientras se procesan */
+
+  /**
+   * Inicia sesión con las credenciales ingresadas.
+   * Muestra un loader mientras se procesa y redirige al tab principal si es exitoso.
+   */
   async login() {
-    this.loading = await this.loadingController.create(
-      { message: 'Iniciando sesión...', }
-    );
+    this.loading = await this.loadingController.create({
+      message: 'Iniciando sesión...',
+    });
     await this.loading.present();
 
-
-    const user = await this.authService.registrarUsuario(this.credentials.username,this.credentials.password).catch((error) => {
-      console.log(error);
-      this.loading?.dismiss()
-    })
-
-    if(user){
-      this.loading.dismiss()
+    try {
+      const user = await this.authService.iniciarSesion(
+        this.credentials.username,
+        this.credentials.password
+      );
+      if (user) {
+        await this.loading.dismiss();
+        this.router.navigateByUrl('/tabs').then(() => {
+  const firstInput = document.querySelector('ion-input') as HTMLIonInputElement;
+  if (firstInput) {
+    firstInput.setFocus(); 
+  }
+});
+      }
+    } catch (error) {
+      console.error(error);
+      this.errorMessage = 'Correo o contraseña incorrectos';
+      await this.loading.dismiss();
     }
-
-    this.router.navigateByUrl('/tabs/favoritos');
-
   }
 }
+ 

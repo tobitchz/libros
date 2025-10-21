@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-
+import { ModalController } from '@ionic/angular';
+import { Router } from '@angular/router';
+import { ResultadoComponent } from './resultado/resultado.component';
 @Component({
   selector: 'app-buscar',
   templateUrl: './buscar.page.html',
@@ -8,9 +10,12 @@ import { HttpClient } from '@angular/common/http';
   standalone: false
 })
 export class BuscarPage implements OnInit {
-  l: any = [];
+  libros: any = [];
+  autores: any = [];
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private modalController: ModalController,
+    private router: Router
   ) { }
 
 
@@ -18,32 +23,50 @@ export class BuscarPage implements OnInit {
 
   ngOnInit() {
   }
+  getAuthor(nombreAut: string) {
+    let linkAut = this.http.get(`https://openlibrary.org/search.json?author=${nombreAut}`)
+    linkAut.subscribe(
+      {
+        next: (data) => {
+          this.autores = data;
+          this.autores = this.autores.docs
+          console.log(this.autores.author_name)
+        }
+      }
+    )
+  }
 
-
-  getLibro(title: string) {
-
-    let librito = this.http.get(`https://openlibrary.org/search.json?title=${title}&language=spa&fields=key, cover_i, title,author_key, author_name&page=1&limit=50`)
-    librito.subscribe({
+  getLibros(title: string) {
+    let link = this.http.get(`https://openlibrary.org/search.json?title=${title}&language=spa&fields=key, cover_i, title,author_key, author_name&page=1&limit=50`)
+    link.subscribe({
       next: (data) => {
-        this.l = data;
-        this.l = this.l.docs; 
-        console.log(this.l)
+        this.libros = data;
+        this.libros = this.libros.docs;
+        console.log(this.libros)
       }
     });
   }
 
   buscar(event: Event) {
     let valor = (event.target as HTMLIonSearchbarElement).value
-    if (valor === "") {
-      this.l = []
+    if (valor) {
+      this.getLibros(String(valor))
+ 
     }
     else {
-      this.getLibro(String(valor))
+      this.libros = []
     }
 
   }
-  respuesta(event : Event){
-    console.log(this.l[0].title)
+  async respuesta(libro: any) {
+
+
+    const modal = await this.modalController.create({
+      component: ResultadoComponent,
+      cssClass : 'modal',
+    });
+    modal.present();
+
   }
 
 }

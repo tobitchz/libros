@@ -1,37 +1,53 @@
 <ion-header>
   <ion-toolbar>
+     <ion-row>    
     <ion-title>Iniciar Sesión</ion-title>
+
+    <ion-button  routerLink="/registro" class="boton-registro">
+      Crear cuenta
+      </ion-button>
+     </ion-row>
   </ion-toolbar>
+
+   
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content class="ion-padding centrar" >
+
+  <ion-grid>
+
   <ion-item>
-    <ion-label position="floating">Email</ion-label>
+    <ion-label position="floating" >Email</ion-label>
     <ion-input type="text" [(ngModel)]="credentials.username"></ion-input>
   </ion-item>
 
   <ion-item>
-    <ion-label position="floating">Contraseña</ion-label>
-    <ion-input type="password" [(ngModel)]="credentials.password"></ion-input>
+    <ion-label position="floating" >Contraseña</ion-label>
+    <ion-input type="password" [(ngModel)]="credentials.password" value="NeverGonnaGiveYouUp">
+      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+    </ion-input>
   </ion-item>
+
 
   <ion-text color="danger" *ngIf="errorMessage">
     <p>{{ errorMessage }}</p>
   </ion-text>
 
-  <ion-grid>
-    <ion-row>
-      <ion-col size="auto">
-        <ion-button routerLink="" title="Home">
-          <ion-icon name="arrow-back"></ion-icon>
-        </ion-button>
-      </ion-col>
-      <ion-col>
-        <ion-button expand="block" (click)="login()" [disabled]="!credentials.username || !credentials.password">
+  
+    <ion-row> 
+      <ion-col  class="boton-sesion">
+        <ion-button expand="block" (click)="login()" [disabled]="!credentials.username || !credentials.password" style="padding-left: 0px; padding-right: 0px;">
           Iniciar Sesión
         </ion-button>
-      </ion-col>
+      </ion-col> 
     </ion-row>
+
   </ion-grid>
+
+ 
+ <img alt="Silhouette of mountains" src="assets/imagenes/01.jpeg" class="imagen" />
+
+
+
 
 </ion-content>

@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Proveedor } from '../proveedor';
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth';
 
 @Component({
   selector: 'app-tabs',
@@ -9,5 +11,13 @@ import { Proveedor } from '../proveedor';
 })
 export class TabsPage {
 
-  
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
+
+  async logout() {
+    await this.authService.cerrarSesion(); // o firebase.auth().signOut();
+    this.router.navigate(['/login']);
+  }
 }
