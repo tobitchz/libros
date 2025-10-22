@@ -51,6 +51,12 @@ export class RegistroPage {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.credentials.email)) {
+      this.errorMessage = 'Ingrese un correo electrónico válido';
+      return;
+    }
+
     if (this.credentials.password !== this.credentials.confirmPassword) {
       this.errorMessage = 'Las contraseñas no coinciden';
       return;
