@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { BuscarPage } from '../buscar.page';
 
 @Component({
   selector: 'app-resultado',
@@ -11,6 +11,9 @@ export class ResultadoComponent  implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {}
+  ngOnInit() {
+    
+  }
 
+  
 }
