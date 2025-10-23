@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { getDatabase, ref, update, get, child } from "firebase/database";
+import { getDatabase, ref, update, get, child, remove } from "firebase/database";
 
 import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { firstValueFrom, throwError } from 'rxjs';
+import { EmailAuthProvider } from 'firebase/auth';
 
 /** Identificador del usuario actualmente autenticado. */
-export var currentUserId:any
+export var currentUserId: any
 
 /**
  * Servicio de autenticación con Firebase.
@@ -26,8 +28,7 @@ export class AuthService {
   constructor(
     public ngFireAuth: AngularFireAuth,
     private firestore: AngularFirestore
-  )
-     {}
+  ) { }
 
   /**
    * Registra un nuevo usuario en Firebase Authentication y guarda su email en Realtime Database.
@@ -39,20 +40,55 @@ export class AuthService {
     const userCredential = await this.ngFireAuth.createUserWithEmailAndPassword(email, password);
     const uid = userCredential.user?.uid;
 
-        if (uid) {
-          const db = getDatabase();
-          const reference = ref(db, 'users/' + uid);
+    if (uid) {
+      const db = getDatabase();
+      const reference = ref(db, 'users/' + uid);
 
-          const nombreUsuario = email.split('@')[0];
+      const nombreUsuario = email.split('@')[0];
 
 
-          await update(reference, {
-            id: uid,
-            email: email
-          });
-      }
+      await update(reference, {
+        id: uid,
+        email: email
+      });
+    }
 
     return userCredential.user;
+  }
+
+  async eliminarCuenta(password: string) {
+
+    try {
+      const user = await firstValueFrom(this.ngFireAuth.user);
+      if (!user) {
+        throw new Error("no hay usuario logeado")
+      }
+
+      if (!user.email) {
+        throw new Error('El usuario no tiene email registrado');
+      } // esto valida y avisa que el strin no es null
+
+      const credential = EmailAuthProvider.credential(user.email, password);
+
+      await (user as any).reauthenticateWithCredential(credential)
+
+      const db = getDatabase();
+      const userRef = ref(db, `users/${user.uid}`);
+      await remove(userRef)
+
+
+
+      await user.delete();
+
+      await this.ngFireAuth.signOut();
+
+      console.log('usuario eliminado correctamente');
+      return true;
+    } catch (err: any) {
+      console.error("error al eliminar la cuenta:", err);
+
+      throw err;
+    }
   }
 
 
@@ -62,7 +98,7 @@ export class AuthService {
    * @param password Contraseña.
    * @returns Credenciales del usuario autenticado.
    */
-    async loginUsuario(email: string, password: string) {
+  async loginUsuario(email: string, password: string) {
     return await this.ngFireAuth.signInWithEmailAndPassword(email, password);
   }
 
@@ -92,15 +128,15 @@ export class AuthService {
   }
 
   async cambiarNombreUsuario(nuevoNombre: string): Promise<void> {
-  const user = await this.ngFireAuth.currentUser;
-  if (!user || !user.uid) throw new Error('no hay usuario logueado');
+    const user = await this.ngFireAuth.currentUser;
+    if (!user || !user.uid) throw new Error('no hay usuario logueado');
 
-  await user.updateProfile({ displayName: nuevoNombre });
+    await user.updateProfile({ displayName: nuevoNombre });
 
-  const db = getDatabase();
-  const reference = ref(db, 'users/' + user.uid);
-  await update(reference, { nombre: nuevoNombre });
-}
+    const db = getDatabase();
+    const reference = ref(db, 'users/' + user.uid);
+    await update(reference, { nombre: nuevoNombre });
+  }
 
 
 
@@ -109,25 +145,28 @@ export class AuthService {
    * @param userId ID del usuario.
    * @param email Correo electrónico del usuario.
    */
-  writeEmail(userId:any, email:any){
-      const db = getDatabase();
-      const reference = ref(db, 'users/' + userId);
-  
-      update(reference, {
-        email:email
-      })
-    }
+  writeEmail(userId: any, email: any) {
+    const db = getDatabase();
+    const reference = ref(db, 'users/' + userId);
+
+    update(reference, {
+      email: email
+    })
+  }
 
   /**
    * Escribe el ID del usuario en Realtime Database.
    * @param userId ID del usuario.
    */
-  writeUserId(userId:any) {
-      const db = getDatabase();
-      const reference = ref(db, 'users/' + userId);
+  writeUserId(userId: any) {
+    const db = getDatabase();
+    const reference = ref(db, 'users/' + userId);
 
-  update(reference, {
-        id: userId
-      })
+    update(reference, {
+      id: userId
+    })
   }
+
+
+
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AlertController, ModalController } from '@ionic/angular';
-import { AuthService } from '../../services/auth'; 
+import { AuthService } from '../../services/auth';
 import { Router } from '@angular/router';
 
 @Component({
@@ -16,13 +16,13 @@ export class ModalCuentaComponent implements OnInit {
   constructor(private modalCtrl: ModalController,
     private modalAlert: AlertController,
     private authService: AuthService,
-    private router: Router) {}
+    private router: Router) { }
 
   async ngOnInit() {
 
   }
 
- async confirmDelete(){
+  async confirmDelete() {
     const alert = await this.modalAlert.create({
       header: 'Eliminar cuenta',
       message: 'Esto borrara tu cuenta, esta accion es irreversible ¿Queres continuar?',
@@ -31,14 +31,73 @@ export class ModalCuentaComponent implements OnInit {
         {
           text: 'Eliminar',
           role: 'destructive',
-          handler: () => this.elegir('delete')
+          handler: () => this.pedirContrasenia()
         }
       ]
     });
     await alert.present();
   }
 
-   async confirmLogout(){
+
+  private async pedirContrasenia() {
+    const alert = await this.modalAlert.create({
+      header: 'Confirmar contraseña',
+      message: 'Ingresá tu contraseña para confirmar la eliminación de la cuenta',
+      inputs: [
+        { name: 'password', type: 'password', placeholder: 'contraseña' }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: async (data) => {
+            const pw = (data?.password ?? '').trim();
+            if (!pw) {
+              return false;
+            }
+            await this.eliminarCuenta(pw);
+
+            return true;
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+
+  private async eliminarCuenta(password: string) {
+    const confirm = await this.modalAlert.create({
+      header: 'Eliminando cuenta',
+      message: 'Esto puede tardar unos segundos...',
+      backdropDismiss: false
+    });
+    await confirm.present();
+
+    try {
+      await this.authService.eliminarCuenta(password);
+
+          try { await confirm.dismiss(); } catch(err) {}
+      await this.router.navigate(['/login'], { replaceUrl: true });
+    } catch (err: any) {
+
+      try { 
+        await confirm.dismiss(); 
+      } 
+      catch(err) {}      
+      
+      const errAlert = await this.modalAlert.create({
+        header: 'Error',
+        message: err?.message ?? 'Error al eliminar la cuenta',
+        buttons: ['OK']
+      });
+      await errAlert.present();
+      console.error(err);
+    }
+  }
+  async confirmLogout() {
     const alert = await this.modalAlert.create({
       header: 'Cerrar sesion',
       message: 'Esta accion cerrara la sesion de tu cuenta ¿Queres continuar?',
@@ -55,12 +114,12 @@ export class ModalCuentaComponent implements OnInit {
   }
 
 
-  private elegir(action: 'logout' | 'delete' | 'edit' | 'cancel'){
-    if(action == 'cancel'){
+  private elegir(action: 'logout' | 'delete' | 'edit' | 'cancel') {
+    if (action == 'cancel') {
       this.modalCtrl.dismiss(null, 'cancel');
-    }  
-    else{
-      this.modalCtrl.dismiss({action}, 'confirm')
+    }
+    else {
+      this.modalCtrl.dismiss({ action }, 'confirm')
     }
   }
 
@@ -68,33 +127,34 @@ export class ModalCuentaComponent implements OnInit {
 
 
   async cambiarUsuario() {
-  const alert = await this.modalAlert.create({
-    header: 'Cambiar nombre de usuario' ,
-    inputs: [{ name: 'nombre', type: 'text', placeholder: 'nuevo nombre' }],
-    buttons: [
-      { text: 'Cancelar', role: 'cancel' },
-      {
-        text: 'Guardar',
-        handler: async ({ nombre }) => {
-          const nuevo = (nombre ?? '').trim();
-          if (!nuevo) return;
-          await this.authService.cambiarNombreUsuario(nuevo);
-          await this.modalCtrl.dismiss({ nombre: nuevo }, 'confirm');
+    const alert = await this.modalAlert.create({
+      header: 'Cambiar nombre de usuario',
+      inputs: [{ name: 'nombre', type: 'text', placeholder: 'nuevo nombre' }],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Guardar',
+          handler: async ({ nombre }) => {
+            const nuevo = (nombre ?? '').trim();
+            if (!nuevo) return;
+            await this.authService.cambiarNombreUsuario(nuevo);
+            await this.modalCtrl.dismiss({ nombre: nuevo }, 'confirm');
+          }
         }
-      }
-    ]
-  });
-  await alert.present();
-}
+      ]
+    });
+    await alert.present();
+  }
 
- 
+
+
 
 
   async logout() {
     try {
       await this.authService.cerrarSesion();
-      await this.modalCtrl.dismiss(); 
-      this.router.navigate(['/login']); 
+      await this.modalCtrl.dismiss();
+      this.router.navigate(['/login']);
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }
