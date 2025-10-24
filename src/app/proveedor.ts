@@ -64,7 +64,7 @@ export class Proveedor {
           
           return {
             id: libro.edition_key[0],
-            tipo: 'book',
+            tipo: 'books',
             titulo: libro.title,
             autor: libro.author_name ? libro.author_name.join(', ') : 'Desconocido',
             portada: libro.cover_i
@@ -75,7 +75,7 @@ export class Proveedor {
           
           return {
             id: libro.key.replace('/works/', ''), 
-            tipo: 'work',
+            tipo: 'works',
             titulo: libro.title,
             autor: libro.author_name ? libro.author_name.join(', ') : 'Desconocido',
             portada: libro.cover_i

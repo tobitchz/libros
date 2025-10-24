@@ -24,28 +24,37 @@ export class LibroPage implements OnInit {
     private alertCtrl: AlertController
   ) { }
 
-  ngOnInit() {
-    this.route.paramMap.subscribe(params => {
-      this.libroId = params.get('id');
-      if (this.libroId) {
-        this.getLibroDetalle(this.libroId);
-      }
-    });
-  }
+ ngOnInit() {
+  this.route.paramMap.subscribe(params => { 
+    const id = params.get('id'); 
+    let tipo = params.get('tipo');
+    if (tipo == null)
+    {
+      tipo = 'works'
+    }
+    if (id) this.getLibroDetalle(id, tipo);
+  });
+}
 
-  getLibroDetalle(id: string) {
-    const url = `https://openlibrary.org/works/${id}.json`;
 
-    this.http.get(url).subscribe({
-      next: (data) => {
-        this.libro = data;
-        console.log('Detalle del libro:', this.libro);
-      },
-      error: (err) => {
-        console.error('Error cargando detalle:', err);
-      }
-    });
-  }
+
+
+  getLibroDetalle(id: string, tipo: string) {
+  
+  const url = `https://openlibrary.org/${tipo}/${id}.json`;
+
+  this.http.get(url).subscribe({
+    next: (data) => {
+      this.libro = data;
+      console.log('Detalle del libro:', this.libro);
+    },
+    error: (err) => {
+      // si no existe en books, probar en works
+      if (tipo != 'books') this.getLibroDetalle(id, 'works');
+      else console.error('Error cargando detalle:', err);
+    }
+  });
+}
 
 
 

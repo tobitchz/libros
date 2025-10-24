@@ -23,6 +23,8 @@ export class BuscarPage implements OnInit {
 
   ngOnInit() {
   }
+
+
   getAuthor(nombreAut: string) {
     let linkAut = this.http.get(`https://openlibrary.org/search.json?author=${nombreAut}`)
     linkAut.subscribe(
@@ -37,14 +39,15 @@ export class BuscarPage implements OnInit {
   }
 
   getLibros(title: string) {
-    let link = this.http.get(`https://openlibrary.org/search.json?title=${title}&language=spa&fields=key, cover_i, title,author_key, author_name&page=1&limit=50`)
-    link.subscribe({
-      next: (data) => {
-        this.libros = data;
-        this.libros = this.libros.docs;
-        console.log(this.libros)
-      }
-    });
+    const url = `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&fields=edition_key,cover_i,title,author_key,author_name&page=1&limit=50`;
+
+    this.http.get<any>(url).subscribe({
+    next: (data) => {
+      this.libros = data.docs;
+      console.log(this.libros);
+    },
+    error: (err) => console.error('error libros:', err)
+  });
   }
 
   buscar(event: Event) {
@@ -58,15 +61,14 @@ export class BuscarPage implements OnInit {
     }
 
   }
+
   async respuesta(libro: any) {
-
-
-    const modal = await this.modalController.create({
-      component: ResultadoComponent,
-      cssClass : 'modal',
-    });
-    modal.present();
-
+  const id = libro.edition_key?.[0];
+  if (!id) {
+    console.error('error key');
+    return;
   }
+  this.router.navigate(['/libro', { id, tipo: 'books' }]);
+}
 
 }
