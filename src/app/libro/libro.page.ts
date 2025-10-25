@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ChangeDetectorRef } from '@angular/core';
 import { Translate } from '../services/translate';
+import { Location } from '@angular/common';
 
 
 
@@ -34,7 +35,8 @@ export class LibroPage implements OnInit {
     private http: HttpClient,
     private alertCtrl: AlertController,
     private cdr: ChangeDetectorRef,
-    private translate: Translate
+    private translate: Translate,
+    private location: Location
     
   ) {}
 
@@ -140,4 +142,12 @@ getLibroDetalle(id: string, tipo: string) {
 
     await alert.present();
   }
+
+
+  volverAtras() {
+  this.location.back();
+}
+
+
+
 }
