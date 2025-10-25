@@ -83,78 +83,32 @@ getLibroDetalle(id: string, tipo: string) {
   
 
 
-  /**
-   * Obtiene el slug del autor (nombre en minúsculas y con guiones).
-   * Si hay varios autores, los concatena con guiones.
-   * @returns {Promise<string>} Slug del autor o 'desconocido' si no hay datos.
-   */
-  async getAutoresSlug(): Promise<string> {
-  if (!this.libro || !this.libro.authors) return 'desconocido';
 
-  const promesas = this.libro.authors.map(async (a: any) => {
-    const fullKey = a.author?.key;
-    if (fullKey) {
-      try {
-        const authorId = fullKey.split('/').pop(); 
-        const authorData: any = await this.http.get(`https://openlibrary.org/authors/${authorId}.json`).toPromise();
-        return authorData.name.toLowerCase().normalize('NFD')
-          .replace(/\s+/g, '-');
-      } catch (e) {
-        console.error('Error cargando autor', a.key, e);
-        return '';
-      }
-    }
-    if (id) this.getLibroDetalle(id, tipo);
-  });
-}
-
-
-
-
-//   getLibroDetalle(id: string, tipo: string) {
-  
-//   const url = `https://openlibrary.org/${tipo}/${id}.json`;
-
-//   this.http.get(url).subscribe({
-//     next: (data) => {
-//       this.libro = data;
-//       console.log('Detalle del libro:', this.libro);
-//     },
-//     error: (err) => {
-//       // si no existe en books, probar en works
-//       if (tipo != 'books') this.getLibroDetalle(id, 'works');
-//       else console.error('Error cargando detalle:', err);
-//     }
-//   });
-// }
-
-
-
-  // async getAutoresSlug(): Promise<string> {
-  //   if (!this.libro || !this.libro.authors) return 'desconocido';
+   async getAutoresSlug(): Promise<string> {
+     if (!this.libro || !this.libro.authors) return 'desconocido';
 
 
   //   // array de Promesas para cada autor
-  //   const promesas = this.libro.authors.map(async (a: any) => {
-  //     const fullKey = a.author?.key;
-  //     if (fullKey) {
-  //       try {
-  //         const authorId = fullKey.split('/').pop(); // solo la KEY del autor 
-  //         const authorData: any = await this.http.get(`https://openlibrary.org/authors/${authorId}.json`).toPromise();
-  //         return authorData.name.toLowerCase().normalize('NFD')
-  //           //.replace(/[\u0300-\u036f]/g, '')   // quitar acentos
-  //           .replace(/\s+/g, '-');             // espacios a guiones
-  //       } catch (e) {
-  //         console.error('Error cargando autor', a.key, e);
-  //         return '';
-  //       }
-  //     }
-  //     return '';
-  //   });
+    const promesas = this.libro.authors.map(async (a: any) => {
+      const fullKey = a.author?.key;
+      if (fullKey) {
+        try {
+          const authorId = fullKey.split('/').pop(); // solo la KEY del autor 
+          const authorData: any = await this.http.get(`https://openlibrary.org/authors/${authorId}.json`).toPromise();
+          return authorData.name.toLowerCase().normalize('NFD')
+            //.replace(/[\u0300-\u036f]/g, '')   // quitar acentos
+            .replace(/\s+/g, '-');             // espacios a guiones
+        } catch (e) {
+          console.error('Error cargando autor', a.key, e);
+          return '';
+        }
+      }
+      return '';
+    });
 
-  //   const nombres = await Promise.all(promesas);
-  //   return nombres.filter(n => n.trim() !== '').join('-');
-  // }
+    const nombres = await Promise.all(promesas);
+    return nombres.filter(n => n.trim() !== '').join('-');
+  }
 
 
 
