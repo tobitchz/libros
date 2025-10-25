@@ -54,7 +54,7 @@ export class DestacadosPage implements OnInit {
    * @param {any} libro - Objeto que contiene los datos del libro seleccionado.
    */
   verDetalle(libro: any) {
-    
+  
     this.router.navigate(['/libro', { id: libro.id, tipo: libro.tipo }]);
   }
 }
