@@ -4,9 +4,9 @@ import { IonicModule } from '@ionic/angular';
 
 import { BuscarPageRoutingModule } from './buscar-routing.module';
 import { BuscarPage } from './buscar.page';
-
+import { ResultadoComponent } from './resultado/resultado.component';
 @NgModule({
-  declarations: [BuscarPage],
+  declarations: [BuscarPage, ResultadoComponent],
   imports: [
     CommonModule,
     IonicModule,
