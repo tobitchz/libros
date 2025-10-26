@@ -15,9 +15,4 @@ export class TabsPage {
     private router: Router,
     private authService: AuthService
   ) {}
-
-  async logout() {
-    await this.authService.cerrarSesion(); // o firebase.auth().signOut();
-    this.router.navigate(['/login']);
-  }
 }

@@ -43,6 +43,9 @@ export class AuthService {
           const db = getDatabase();
           const reference = ref(db, 'users/' + uid);
 
+          const nombreUsuario = email.split('@')[0];
+
+
           await update(reference, {
             id: uid,
             email: email
@@ -87,6 +90,18 @@ export class AuthService {
   async obtenerUsuario() {
     return await this.ngFireAuth.currentUser;
   }
+
+  async cambiarNombreUsuario(nuevoNombre: string): Promise<void> {
+  const user = await this.ngFireAuth.currentUser;
+  if (!user || !user.uid) throw new Error('no hay usuario logueado');
+
+  await user.updateProfile({ displayName: nuevoNombre });
+
+  const db = getDatabase();
+  const reference = ref(db, 'users/' + user.uid);
+  await update(reference, { nombre: nuevoNombre });
+}
+
 
 
   /**

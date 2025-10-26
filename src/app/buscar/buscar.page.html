@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-searchbar  (ionInput)="buscar($event)"></ion-searchbar>
+    <ion-searchbar [debounce]="1000" (ionInput)="buscar($event)"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 

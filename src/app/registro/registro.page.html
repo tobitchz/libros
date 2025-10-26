@@ -20,12 +20,14 @@
 
   <ion-item>
     <ion-label position="floating">Contraseña</ion-label>
-    <ion-input type="password" [(ngModel)]="credentials.password"></ion-input>
+    <ion-input type="password" [(ngModel)]="credentials.password" value="NeverGonnaGiveYouUp"><ion-input-password-toggle slot="end"></ion-input-password-toggle></ion-input>
+    
   </ion-item>
 
   <ion-item>
     <ion-label position="floating">Confirmar contraseña</ion-label>
-    <ion-input type="password" [(ngModel)]="credentials.confirmPassword"></ion-input>
+    <ion-input type="password" [(ngModel)]="credentials.confirmPassword" value="NeverGonnaGiveYouUp"><ion-input-password-toggle slot="end"></ion-input-password-toggle></ion-input>
+    
   </ion-item>
 
   <ion-text color="danger" *ngIf="errorMessage">

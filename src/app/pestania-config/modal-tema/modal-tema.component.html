@@ -1,0 +1,47 @@
+<ion-content class="ion-padding modal-tema">
+
+  <div class="sheet-handle"></div>
+
+  <div class="header">
+    <h2>Seleccionar tema</h2>
+    <p>Elegi cómo queres ver la app</p>
+  </div>
+  <ion-radio-group value="options">
+    <ion-list lines="none" class="opciones">
+      <ion-item button detail="false">
+        <ion-icon name="phone-portrait-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Sistema</h3>
+          <p>Usa el modo del dispositivo</p>
+        </ion-label>
+        <ion-radio value="system" slot="end"></ion-radio>
+      </ion-item>
+
+      <ion-item button detail="false">
+        <ion-icon name="sunny-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Claro</h3>
+          <p>Fondo claro, alto contraste</p>
+        </ion-label>
+        <ion-radio value="light" slot="end"></ion-radio>
+      </ion-item>
+
+      <ion-item button detail="false">
+        <ion-icon name="moon-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h3>Oscuro</h3>
+          <p>Ideal de noche o poca luz</p>
+        </ion-label>
+        <ion-radio value="dark" slot="end"></ion-radio>
+      </ion-item>
+    </ion-list>
+
+    <div class="acciones">
+      <ion-button fill="clear" (click)="cancel()">Cancelar</ion-button>
+      <ion-button (click)="confirm()">Aplicar</ion-button>
+    </div>
+
+
+
+  </ion-radio-group>
+</ion-content>
