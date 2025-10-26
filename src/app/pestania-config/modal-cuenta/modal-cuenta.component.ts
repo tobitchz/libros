@@ -67,6 +67,99 @@ export class ModalCuentaComponent implements OnInit {
     await alert.present();
   }
 
+  async cambiarPassword() {
+    const alert = await this.modalAlert.create({
+      header: 'Cambia contraseña',
+      message: 'Ingresá tu nueva contraseña ',
+      inputs: [
+        { name: 'actual', type: 'password', placeholder: 'contraseña actual' },
+        { name: 'passwordNueva', type: 'password', placeholder: 'nueva contraseña' },
+        { name: 'passwordRepetida', type: 'password', placeholder: 'repeti contraseña' }
+      ],
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Cambiar',
+          role: 'destructive',
+          handler: async (data) => {
+
+            const password = (data?.actual ?? '').trim();
+            const nuevaPassword = (data?.passwordNueva ?? '').trim();
+            const repetirPassword = (data?.passwordRepetida ?? '').trim();
+
+            if (!password || !nuevaPassword || !repetirPassword) {
+              const err = await this.modalAlert.create({
+                header: 'Error',
+                message: 'Completa todos los campos.',
+                buttons: ['OK']
+              });
+              await err.present();
+              return false;
+            }
+
+            if(nuevaPassword.length < 8){
+              const err = await this.modalAlert.create({
+              header: 'Error',
+              message: 'La nueva contraseña debe tener al menos 8 caracteres.',
+              buttons: ['OK']
+            });
+            await err.present();
+            return false;
+            }
+
+
+            if(nuevaPassword !== repetirPassword){
+
+              const err = await this.modalAlert.create({
+                header :' Error',
+                message: 'Las contraseñas no coinciden',
+                buttons: ['Ok']
+              });
+              await err.present();
+              return false;
+
+
+
+
+            }
+
+
+            const loading = await this.modalAlert.create({
+            header: 'Actualizando...',
+            message: 'Un momento por favor',
+            backdropDismiss: false
+          });
+          await loading.present();
+
+
+           try {
+            await this.authService.cambiarContrasenia(password, nuevaPassword);
+            try { await loading.dismiss(); } catch {}
+            const ok = await this.modalAlert.create({
+              header: 'Exito',
+              message: 'La contraseña se actualizo correctamente.',
+              buttons: ['OK']
+            });
+            
+            await ok.present();
+            return true;
+          } catch (e: any) {
+            try { await loading.dismiss(); } catch {}
+            const msg = e?.message ?? 'Error al cambiar la contraseña.';
+            const err = await this.modalAlert.create({
+              header: 'Error',
+              message: msg,
+              buttons: ['OK']
+            });
+            await err.present();
+            return false;
+          }
+        }
+      }
+    ]
+  });
+  await alert.present();
+}
 
   private async eliminarCuenta(password: string) {
     const confirm = await this.modalAlert.create({
@@ -79,15 +172,15 @@ export class ModalCuentaComponent implements OnInit {
     try {
       await this.authService.eliminarCuenta(password);
 
-          try { await confirm.dismiss(); } catch(err) {}
+      try { await confirm.dismiss(); } catch (err) { }
       await this.router.navigate(['/login'], { replaceUrl: true });
     } catch (err: any) {
 
-      try { 
-        await confirm.dismiss(); 
-      } 
-      catch(err) {}      
-      
+      try {
+        await confirm.dismiss();
+      }
+      catch (err) { }
+
       const errAlert = await this.modalAlert.create({
         header: 'Error',
         message: err?.message ?? 'Error al eliminar la cuenta',

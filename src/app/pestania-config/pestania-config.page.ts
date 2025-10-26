@@ -55,6 +55,18 @@ export class PestaniaConfigPage implements OnInit {
     await cuentaModal.present();
 
     const { data, role } = await cuentaModal.onWillDismiss();
+
+    if(role === 'confirm' && data?.nombre){
+      this.nombreUsuario = data.nombre;
+    }
+
+       
+      const user = await this.authService.obtenerUsuario();
+      await user?.reload();
+      if(user?.displayName){
+        this.nombreUsuario = user.displayName
+      
+    }
     console.log('Modal cerrado con:', data, role);
   }
 
@@ -69,9 +81,10 @@ export class PestaniaConfigPage implements OnInit {
   async ngOnInit() {
 
      const user = await this.authService.obtenerUsuario();
+     await user?.reload();  
 
     if (user) {
-      if (user.email) {
+      if (user.email) { 
         this.email = user.email;
       }
 

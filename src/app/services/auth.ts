@@ -6,6 +6,9 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { firstValueFrom, throwError } from 'rxjs';
 import { EmailAuthProvider } from 'firebase/auth';
 
+import { updatePassword, reauthenticateWithCredential } from 'firebase/auth';
+
+
 /** Identificador del usuario actualmente autenticado. */
 export var currentUserId: any
 
@@ -66,7 +69,7 @@ export class AuthService {
 
       if (!user.email) {
         throw new Error('El usuario no tiene email registrado');
-      } // esto valida y avisa que el strin no es null
+      } // esto valida y avisa que el strin no es nulll
 
       const credential = EmailAuthProvider.credential(user.email, password);
 
@@ -90,6 +93,48 @@ export class AuthService {
       throw err;
     }
   }
+
+
+  async tieneProvider(): Promise<boolean> {
+    const user = await this.ngFireAuth.currentUser;
+    if (!user) {
+      return false;
+    }
+    return user.providerData.some(p => p?.providerId === 'password');
+  }
+
+
+  async cambiarContrasenia(passActual: string, passNueva: string): Promise<void> {
+    const user = await this.ngFireAuth.currentUser;          
+
+
+    if (!user || !user.email){
+       throw new Error("auth/no-current-user");       
+    }
+
+ 
+    const tienePassword = user.providerData.some(p => p?.providerId === 'password');
+
+
+    if(!tienePassword){
+       throw new Error('auth/no-password-provider');
+    }
+
+
+    if(!passNueva || passNueva.length < 8){
+       throw new Error('auth/weak-password');
+    }
+
+
+    
+    const cred = EmailAuthProvider.credential(user.email, passActual);
+
+    
+    await (user as any).reauthenticateWithCredential(cred);      
+    await (user as any).updatePassword(passNueva);                
+  }
+
+
 
 
   /**
@@ -132,6 +177,8 @@ export class AuthService {
     if (!user || !user.uid) throw new Error('no hay usuario logueado');
 
     await user.updateProfile({ displayName: nuevoNombre });
+
+    await user.reload();
 
     const db = getDatabase();
     const reference = ref(db, 'users/' + user.uid);
