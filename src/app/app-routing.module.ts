@@ -7,14 +7,15 @@ const routes: Routes = [
   // Ruta raíz: redirige a login al iniciar
   {
     path: '',
-    redirectTo: 'tabs',
+    // redirectTo: 'tabs',
+    redirectTo: 'login',
     pathMatch: 'full'
   },
   // Tabs principal (destacados será la tab inicial)
   {
     path: 'tabs',
     loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule),
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   // Login
   {
@@ -30,13 +31,13 @@ const routes: Routes = [
   {
     path: 'libro/:id',
     loadChildren: () => import('./libro/libro.module').then(m => m.LibroPageModule),
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
   // Libro sin id
   {
     path: 'libro',
     loadChildren: () => import('./libro/libro.module').then(m => m.LibroPageModule),
-    canActivate: [authGuard]
+    // canActivate: [authGuard]
   },
 ];
 
