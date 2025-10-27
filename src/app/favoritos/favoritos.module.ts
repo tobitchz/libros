@@ -3,8 +3,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FavoritosPage } from './favoritos.page';
-import { ExploreContainerComponentModule } from '../explore-container/explore-container.module';
-
 import { FavoritosPageRoutingModule } from './favoritos-routing.module';
 
 @NgModule({
@@ -12,7 +10,6 @@ import { FavoritosPageRoutingModule } from './favoritos-routing.module';
     IonicModule,
     CommonModule,
     FormsModule,
-    ExploreContainerComponentModule,
     FavoritosPageRoutingModule
   ],
   declarations: [FavoritosPage]
