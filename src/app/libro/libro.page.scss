@@ -1,6 +1,17 @@
 .portada {
   max-width: 100%;
-  height: auto;
+  min-height: 500px;
+  max-height: 500px;
   display: block;
   margin: 0 auto; // centra la imagen horizontalmente
+}
+ion-button{
+  padding-top: 3px;
+}
+
+.atras{
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  z-index: 10;
 }

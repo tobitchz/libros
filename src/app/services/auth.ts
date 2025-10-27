@@ -1,37 +1,54 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { getDatabase, ref, update, get, child, remove } from "firebase/database";
-
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { firstValueFrom, throwError } from 'rxjs';
 import { EmailAuthProvider } from 'firebase/auth';
-
 import { updatePassword, reauthenticateWithCredential } from 'firebase/auth';
+import { BehaviorSubject } from 'rxjs';
 
 
 /** Identificador del usuario actualmente autenticado. */
 export var currentUserId: any
+
 
 /**
  * Servicio de autenticación con Firebase.
  * Maneja el registro, inicio y cierre de sesión, y la escritura de datos del usuario.
  */
 
-
 @Injectable({
   providedIn: 'root'
 })
 
 export class AuthService {
+  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
+  public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
   /**
    * @param ngFireAuth Módulo de autenticación de AngularFire.
-   * @param firestore Referencia al servicio de base de datos Firestore.
    */
   constructor(
     public ngFireAuth: AngularFireAuth,
     private firestore: AngularFirestore
-  ) { }
+  ) { 
+
+    this.ngFireAuth.onIdTokenChanged(() => {
+    this.checkAuthState();})
+  }
+
+    
+
+  /**
+   * Verifica el estado de autenticación al inicializar el servicio
+   */
+  private checkAuthState() {
+    this.ngFireAuth.authState.subscribe(user => {
+      const isAuth = !!user;
+      this.isAuthenticatedSubject.next(isAuth);
+    });
+  }
+
 
   /**
    * Registra un nuevo usuario en Firebase Authentication y guarda su email en Realtime Database.
@@ -47,6 +64,9 @@ export class AuthService {
       const db = getDatabase();
       const reference = ref(db, 'users/' + uid);
 
+
+
+
       const nombreUsuario = email.split('@')[0];
 
 
@@ -54,10 +74,14 @@ export class AuthService {
         id: uid,
         email: email
       });
+
+      this.isAuthenticatedSubject.next(true);
+
     }
 
     return userCredential.user;
   }
+
 
   async eliminarCuenta(password: string) {
 
@@ -143,6 +167,7 @@ export class AuthService {
    * @param password Contraseña.
    * @returns Credenciales del usuario autenticado.
    */
+
   async loginUsuario(email: string, password: string) {
     return await this.ngFireAuth.signInWithEmailAndPassword(email, password);
   }
@@ -150,8 +175,17 @@ export class AuthService {
   /**
    * Alias de loginUsuario. Inicia sesión del usuario.
    */
+
+
   async iniciarSesion(email: string, password: string) {
-    return await this.ngFireAuth.signInWithEmailAndPassword(email, password);
+    const user = await this.ngFireAuth.signInWithEmailAndPassword(email, password);
+    if (user) {
+      console.log(user);
+      this.isAuthenticatedSubject.next(true);
+    } else {
+      this.isAuthenticatedSubject.next(false);
+    }
+    return user
   }
 
   /**
@@ -164,7 +198,26 @@ export class AuthService {
 
   /** Cierra la sesión actual. */
   async cerrarSesion() {
-    return await this.ngFireAuth.signOut();
+    await this.ngFireAuth.signOut();
+    this.isAuthenticatedSubject.next(false);
+  }
+
+  /**
+   * Obtiene el ID del usuario actualmente autenticado
+   * @returns ID del usuario o null si no está autenticado
+   */
+  async getCurrentUserId() {
+    const user = await this.ngFireAuth.currentUser;
+    return user ? user.uid : null;
+  }
+
+  /**
+   * Verifica si el usuario está autenticado (versión síncrona)
+   * @returns true si está autenticado, false si no
+   */
+  async isLoggedIn() {
+    const userId = await this.getCurrentUserId()
+    return !!userId;
   }
 
   /** Obtiene el usuario autenticado actualmente. */
@@ -178,7 +231,10 @@ export class AuthService {
 
     await user.updateProfile({ displayName: nuevoNombre });
 
+
     await user.reload();
+
+
 
     const db = getDatabase();
     const reference = ref(db, 'users/' + user.uid);

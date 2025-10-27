@@ -64,23 +64,23 @@ export class Proveedor {
           
           return {
             id: libro.edition_key[0],
-            tipo: 'book',
+            tipo: 'books',
             titulo: libro.title,
             autor: libro.author_name ? libro.author_name.join(', ') : 'Desconocido',
             portada: libro.cover_i
               ? `https://covers.openlibrary.org/b/id/${libro.cover_i}-M.jpg`
-              : null
+              : 'assets/imagenes/sin_portada.jpg'
           };
         } else {
           
           return {
             id: libro.key.replace('/works/', ''), 
-            tipo: 'work',
+            tipo: 'works',
             titulo: libro.title,
             autor: libro.author_name ? libro.author_name.join(', ') : 'Desconocido',
             portada: libro.cover_i
               ? `https://covers.openlibrary.org/b/id/${libro.cover_i}-M.jpg`
-              : null
+              : 'assets/imagenes/sin_portada.jpg'
           };
         }
       });

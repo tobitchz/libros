@@ -35,10 +35,10 @@ export class LoginPage implements OnInit {
     private authService: AuthService,
     private router: Router,
     private loadingController: LoadingController
-  ) {}
+  ) { }
 
   /** Inicializa el componente. */
-  ngOnInit() {}
+  ngOnInit() { }
 
 
   /**
@@ -59,11 +59,11 @@ export class LoginPage implements OnInit {
       if (user) {
         await this.loading.dismiss();
         this.router.navigateByUrl('/tabs').then(() => {
-  const firstInput = document.querySelector('ion-input') as HTMLIonInputElement;
-  if (firstInput) {
-    firstInput.setFocus(); 
-  }
-});
+          const firstInput = document.querySelector('ion-input') as HTMLIonInputElement;
+          if (firstInput) {
+            firstInput.setFocus();
+          }
+        });
       }
     } catch (error) {
       console.error(error);
@@ -72,4 +72,4 @@ export class LoginPage implements OnInit {
     }
   }
 }
- 
+
