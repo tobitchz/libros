@@ -8,9 +8,6 @@ import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 
 
-
-
-
 @Component({
   selector: 'app-libro',
   templateUrl: './libro.page.html',
@@ -23,6 +20,7 @@ export class LibroPage implements OnInit {
   libroId: string | null = null;
   libro: any;
   
+  private ultimaRuta: string | null = null;
 /**
    * Inyecta las dependencias necesarias para obtener parámetros de ruta,
    * realizar solicitudes HTTP y mostrar alertas.
@@ -40,7 +38,14 @@ export class LibroPage implements OnInit {
     private location: Location,
     private router: Router
     
-  ) {}
+  ) {
+const nav = this.router.getCurrentNavigation();
+    // Guarda la URL desde donde vino, si existe y no es /autor
+    const prevUrl = nav?.previousNavigation?.finalUrl?.toString();
+    if (prevUrl && !prevUrl.startsWith('/autor')) {
+      this.ultimaRuta = prevUrl;
+    }
+  }
 
 
   /**
@@ -173,11 +178,14 @@ getLibroDetalle(id: string, tipo: string) {
 
 
 
+ volverAtras() {
+    if (this.ultimaRuta) {
+      this.router.navigateByUrl(this.ultimaRuta);
+    } else {
+      this.router.navigate(['/tabs/destacados']);
+    }
+  }
 
-
-  volverAtras() {
-  this.location.back();
-}
 
 
 

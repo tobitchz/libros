@@ -1,9 +1,10 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ autor.name }}</ion-title>
-    <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
-    </ion-buttons>
+
+     <ion-button fill="clear" (click)="volverAtras()" class="atras" >
+      <ion-icon name="chevron-back-outline">    
+      </ion-icon></ion-button>
+
   </ion-toolbar>
 </ion-header>
 

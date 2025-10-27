@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-autor',
@@ -12,7 +13,11 @@ export class AutorPage implements OnInit {
   autor: any = {};
   obras: any[] = [];
 
-  constructor(private route: ActivatedRoute, private http: HttpClient) {}
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private location: Location,)
+     {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
@@ -33,4 +38,11 @@ export class AutorPage implements OnInit {
       error: (err) => console.error('Error cargando obras:', err),
     });
   }
+
+  volverAtras() {
+ this.location.back();
+ }
+
+
+
 }
