@@ -32,79 +32,10 @@
 
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Botones de prueba</ion-card-title>
-      <ion-card-subtitle>Agregar y verificar libros de ejemplo</ion-card-subtitle>
-    </ion-card-header>
-
-    <ion-card-content>
-      <ion-grid>
-        <ion-row>
-          <ion-col size="12" size-md="6">
-            <ion-button expand="block" color="primary" (click)="agregarFavorito('OL503666W')"
-              [disabled]="favService.estaCargando()">
-              <ion-icon name="heart" slot="start"></ion-icon>
-              Agregar "Don Quijote"
-            </ion-button>
-          </ion-col>
-          <ion-col size="12" size-md="6">
-            <ion-button expand="block" color="primary" (click)="agregarFavorito('OL41246412W')"
-              [disabled]="favService.estaCargando()">
-              <ion-icon name="heart" slot="start"></ion-icon>
-              Agregar "Aguasfuertes porteñas"
-            </ion-button>
-          </ion-col>
-          <ion-col size="12" size-md="6">
-            <ion-button expand="block" color="primary" (click)="agregarFavorito('OL14860424W')"
-              [disabled]="favService.estaCargando()">
-              <ion-icon name="heart" slot="start"></ion-icon>
-              Agregar "Rayuela"
-            </ion-button>
-          </ion-col>
-          <ion-col size="12" size-md="6">
-            <ion-button expand="block" color="secondary" (click)="esFavorito('OL503666W')"
-              [disabled]="favService.estaCargando()">
-              <ion-icon name="search" slot="start"></ion-icon>
-              Verificar Don Quijote
-            </ion-button>
-          </ion-col>
-        </ion-row>
-
-        <ion-row>
-          <ion-col size="12" size-md="6">
-            <ion-button expand="block" color="tertiary" (click)="toggleFavorito('OL503666W')"
-              [disabled]="favService.estaCargando()">
-              <ion-icon name="heart-half" slot="start"></ion-icon>
-              Toggle "Don Quijote"
-            </ion-button>
-          </ion-col>
-          <ion-col size="12" size-md="6">
-            <ion-button expand="block" color="warning" (click)="recargarFavoritos()"
-              [disabled]="favService.estaCargando()">
-              <ion-icon name="refresh" slot="start"></ion-icon>
-              Recargar Favoritos
-            </ion-button>
-          </ion-col>
-        </ion-row>
-
-        <ion-row>
-          <ion-col size="12" size-md="6">
-            <ion-button expand="block" color="danger" (click)="limpiarTodosFavoritos()"
-              [disabled]="favService.estaCargando() || favService.favoritos.length === 0">
-              <ion-icon name="trash" slot="start"></ion-icon>
-              Limpiar Todos
-            </ion-button>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-    </ion-card-content>
-  </ion-card>
-
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>
+      <!-- <ion-card-title>
         <ion-icon name="heart" color="danger"></ion-icon>
         Mis Libros Favoritos
-      </ion-card-title>
+      </ion-card-title> -->
       <ion-card-subtitle *ngIf="favService.favoritos.length > 0">
         Total: {{ favService.favoritos.length }} libro(s)
       </ion-card-subtitle>
@@ -118,8 +49,7 @@
 
       <div *ngIf="!favService.estaCargando() && favService.favoritos.length === 0" class="ion-text-center ion-padding">
         <ion-icon name="book-outline" size="large" color="medium"></ion-icon>
-        <h3>No tienes libros favoritos</h3>
-        <p>Agrega algunos libros a tu lista de favoritos usando los botones de arriba</p>
+        <h3>No tiene libros favoritos</h3>
       </div>
 
       <ion-list *ngIf="!favService.estaCargando() && favService.favoritos.length > 0">
@@ -145,6 +75,20 @@
           </ion-button>
         </ion-item>
       </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="favService.estaCargando() || favService.favoritos.length > 0">
+    <ion-card-content>
+      <!-- <ion-button expand="block" color="tertiary" (click)="toggleFavorito('OL503666W')"
+        [disabled]="favService.estaCargando()">
+        <ion-icon name="heart-half" slot="start"></ion-icon>
+        Toggle "Don Quijote"
+      </ion-button> -->
+      <ion-button expand="block" color="danger" (click)="limpiarTodosFavoritos()">
+        <ion-icon name="trash" slot="start"></ion-icon>
+        Limpiar Todos
+      </ion-button>
     </ion-card-content>
   </ion-card>
 </ion-content>
