@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { ModalController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { ResultadoComponent } from './resultado/resultado.component';
+
 @Component({
   selector: 'app-buscar',
   templateUrl: './buscar.page.html',
@@ -38,37 +39,56 @@ export class BuscarPage implements OnInit {
     )
   }
 
-  getLibros(title: string) {
-    const url = `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&fields=edition_key,cover_i,title,author_key,author_name&page=1&limit=50`;
+ getLibros(title: string) {
+  const url = `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&language=spa&fields=key,cover_i,title,author_name&page=1&limit=50`;
 
-    this.http.get<any>(url).subscribe({
+  this.http.get<any>(url).subscribe({
     next: (data) => {
-      this.libros = data.docs;
-      console.log(this.libros);
+      this.libros = data.docs.map((libro: any) => ({
+        key: libro.key, // mantiene la propiedad "key"
+        title: libro.title, // mantiene "title" como antes
+        author_name: libro.author_name, // mantiene el mismo nombre
+        cover_i: libro.cover_i // mantiene el mismo nombre
+      }));
+      console.log('Obras encontradas:', this.libros);
     },
-    error: (err) => console.error('error libros:', err)
+    error: (err) => console.error('Error obteniendo obras:', err)
   });
-  }
+}
 
-  buscar(event: Event) {
-    let valor = (event.target as HTMLIonSearchbarElement).value
-    if (valor) {
-      this.getLibros(String(valor))
- 
-    }
-    else {
-      this.libros = []
-    }
 
-  }
+ timeout: any;
 
-  async respuesta(libro: any) {
-  const id = libro.edition_key?.[0];
-  if (!id) {
-    console.error('error key');
+buscar(event: Event) {
+  clearTimeout(this.timeout);
+
+  const valor = (event.target as HTMLIonSearchbarElement).value?.trim();
+
+  if (!valor || valor.length < 3) {
+    this.libros = [];
     return;
   }
-  this.router.navigate(['/libro', { id, tipo: 'books' }]);
+
+  // Espera 400 ms para evitar llamadas por cada tecla
+  this.timeout = setTimeout(() => {
+    const texto = valor
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // quita acentos
+      .replace(/\s+/g, '+'); // convierte espacios en '+'
+
+    this.getLibros(texto);
+  }, 400);
 }
+
+
+async respuesta(libro: any) {
+  const id = libro.key?.replace('/works/', '');
+  if (!id) {
+    console.error('Error: obra sin ID');
+    return;
+  }
+  this.router.navigate(['/libro', { id, tipo: 'works' }]);
+}
+
 
 }

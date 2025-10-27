@@ -5,6 +5,7 @@ import { AlertController } from '@ionic/angular';
 import { ChangeDetectorRef } from '@angular/core';
 import { Translate } from '../services/translate';
 import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 
 
 
@@ -36,7 +37,8 @@ export class LibroPage implements OnInit {
     private alertCtrl: AlertController,
     private cdr: ChangeDetectorRef,
     private translate: Translate,
-    private location: Location
+    private location: Location,
+    private router: Router
     
   ) {}
 
@@ -66,15 +68,29 @@ getLibroDetalle(id: string, tipo: string) {
   const url = `https://openlibrary.org/${tipo}/${id}.json`;
 
   this.http.get(url).subscribe({
-    next: (data) => {
+    next: async (data) => { // <--- marcá el callback como async
       this.libro = data;
       console.log('Detalle del libro:', this.libro);
 
-      const texto = this.libro.description?.value || this.libro.description || this.libro.title;
+      const texto = this.libro.description?.value || this.libro.description;
+      const titulo = this.libro.title;
+      const publicado = this.libro.first_publish_date || 'Desconocido';
+
+      // Esperar a que getAutoresSlug() termine
+      const autor = await this.getAutoresSlug();
+      this.libro.autor = autor;
 
       if (texto) {
-        this.translate.traducir(texto).subscribe(traduccion => {
-          this.libro.traduccion = traduccion;
+        this.translate.traducir(texto).subscribe(traduccionDescription => {
+          this.libro.traduccion = traduccionDescription;
+          this.cdr.detectChanges();
+        });
+        this.translate.traducir(titulo).subscribe(traduccionTitulo => {
+          this.libro.titulo = traduccionTitulo;
+          this.cdr.detectChanges();
+        });
+        this.translate.traducir(publicado).subscribe(traduccionPublicado => {
+          this.libro.publicado = traduccionPublicado;
           this.cdr.detectChanges();
         });
       }
@@ -82,12 +98,13 @@ getLibroDetalle(id: string, tipo: string) {
     error: (err) => console.error('Error cargando detalle:', err)
   });
 }
+
   
 
 
 
    async getAutoresSlug(): Promise<string> {
-     if (!this.libro || !this.libro.authors) return 'desconocido';
+     if (!this.libro || !this.libro.authors) return 'Desconocido';
 
 
   //   // array de Promesas para cada autor
@@ -97,9 +114,8 @@ getLibroDetalle(id: string, tipo: string) {
         try {
           const authorId = fullKey.split('/').pop(); // solo la KEY del autor 
           const authorData: any = await this.http.get(`https://openlibrary.org/authors/${authorId}.json`).toPromise();
-          return authorData.name.toLowerCase().normalize('NFD')
-            //.replace(/[\u0300-\u036f]/g, '')   // quitar acentos
-            .replace(/\s+/g, '-');             // espacios a guiones
+          return authorData.name.normalize('NFD')
+            .replace(/\s+/g, ' ');             
         } catch (e) {
           console.error('Error cargando autor', a.key, e);
           return '';
@@ -142,6 +158,21 @@ getLibroDetalle(id: string, tipo: string) {
 
     await alert.present();
   }
+
+
+ verAutor(libro: any) {
+  const authorKey = libro?.authors?.[0]?.author?.key;
+  if (!authorKey) {
+    console.error('Libro sin author_key');
+    return;
+  }
+
+  const id = authorKey.replace('/authors/', '');
+  this.router.navigate(['/autor', id]);
+}
+
+
+
 
 
   volverAtras() {

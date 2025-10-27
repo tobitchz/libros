@@ -6,7 +6,7 @@
         
       </ion-icon></ion-button>
 
-    <ion-title style="text-align: center;">{{ libro?.title }}</ion-title>
+    <ion-title style="text-align: center;">{{ libro?.titulo || libro?.title }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -22,11 +22,21 @@
   />
   <ion-card-header>
 
-        <ion-card-title>{{ libro.title }}</ion-card-title>
+        <ion-card-title>{{ libro?.titulo || libro?.title}}</ion-card-title>
         <ion-card-subtitle *ngIf="libro.traduccion; else cargando">
           {{ libro.traduccion }}
         </ion-card-subtitle>
-
+        <br>
+          <ion-card-title>Autor</ion-card-title>
+         <ion-card-subtitle>
+          {{ libro.autor }}</ion-card-subtitle>
+             <br>
+        <ion-button *ngIf="libro.authors?.length" fill="clear" (click)="verAutor(libro)">
+        {{ libro.authors[0].author?.key || 'Desconocido' }}
+      </ion-button>
+        <ion-card-title>Primera edición</ion-card-title>
+        <ion-card-subtitle>{{ libro.publicado }}</ion-card-subtitle>  
+          
       </ion-card-header>
     </ion-card>
   </ng-container>

@@ -39,6 +39,11 @@ const routes: Routes = [
     loadChildren: () => import('./libro/libro.module').then(m => m.LibroPageModule),
     // canActivate: [authGuard]
   },
+  {
+    path: 'autor/:id',
+    loadChildren: () => import('./autor/autor.module').then( m => m.AutorPageModule)
+  },
+
 ];
 
 
