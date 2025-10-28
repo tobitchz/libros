@@ -46,7 +46,10 @@
     </ion-card>
   </ng-container>
 
-
+  <ion-button expand="block" (click)="toggleFavorito()" [color]="esFavorito() ? 'danger' : 'tertiary'">
+    <ion-icon [name]="esFavorito() ? 'heart' : 'heart-outline'"></ion-icon>
+      {{ esFavorito() ? 'Quitar de favoritos' : 'Agregar a favoritos' }}
+  </ion-button>
   <ion-button expand="block" (click)="mostrarAlerta()">
     Comprar
   </ion-button>

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AlertController } from '@ionic/angular';
 import { Proveedor } from '../proveedor';   
 import { Router } from '@angular/router';
+import { FavoritosService } from '../services/favoritos.service';
 
 
 /**
@@ -33,7 +34,8 @@ export class DestacadosPage implements OnInit {
   constructor(
     private alertController: AlertController,
     private proveedor: Proveedor   ,// meter servicio
-    private router: Router 
+    private router: Router ,
+    public favService: FavoritosService
   ) {}
 
 
@@ -57,4 +59,24 @@ export class DestacadosPage implements OnInit {
   
     this.router.navigate(['/libro', { id: libro.id, tipo: libro.tipo }]);
   }
+
+    /**
+   * Alterna el estado de favorito de un libro
+   */
+  async toggleFavorito(libroId: string | null): Promise<void> {
+    if (!libroId) return;
+    try {
+      await this.favService.toggleFavorito(libroId);
+    } catch (error) {
+      console.error('Error al alternar favorito:', error);
+    }
+  }
+
+  /**
+   * Verifica si el libro actual está en favoritos
+   */
+  esFavorito(libroId: string | null) {
+    return libroId ? this.favService.esFavorito(libroId) : false;
+  }
+
 }

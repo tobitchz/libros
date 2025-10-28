@@ -6,6 +6,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { Translate } from '../services/translate';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
+import { FavoritosService } from '../services/favoritos.service';
 
 
 @Component({
@@ -36,7 +37,8 @@ export class LibroPage implements OnInit {
     private cdr: ChangeDetectorRef,
     private translate: Translate,
     private router: Router,
-    private navCtrl: NavController
+    private navCtrl: NavController,
+    public favService: FavoritosService
     
   ) {
 const nav = this.router.getCurrentNavigation();
@@ -191,6 +193,24 @@ volverAtras() {
   this.navCtrl.back();
 }
 
+  /**
+   * Alterna el estado de favorito de un libro
+   */
+  async toggleFavorito(): Promise<void> {
+    if (!this.libroId) return;
+    try {
+      await this.favService.toggleFavorito(this.libroId);
+    } catch (error) {
+      console.error('Error al alternar favorito:', error);
+    }
+  }
+
+  /**
+   * Verifica si el libro actual está en favoritos
+   */
+  esFavorito() {
+    return this.libroId ? this.favService.esFavorito(this.libroId) : false;
+  }
 
 
 }
