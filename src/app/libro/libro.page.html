@@ -24,7 +24,7 @@
 
         <ion-card-title>{{ libro?.titulo || libro?.title}}</ion-card-title>
         <ion-card-subtitle *ngIf="libro.traduccion; else cargando">
-          {{ libro.traduccion }}
+          {{ libro.traduccion}}
         </ion-card-subtitle>
         <br>
           <ion-card-title>Autor</ion-card-title>
@@ -40,7 +40,7 @@
              
         
         <ion-card-title>Primera edición</ion-card-title>
-        <ion-card-subtitle>{{ libro.publicado }}</ion-card-subtitle>  
+        <ion-card-subtitle>{{ libro?.publicado || 'Desconocido'}}</ion-card-subtitle>  
           
       </ion-card-header>
     </ion-card>

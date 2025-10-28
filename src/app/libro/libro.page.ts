@@ -4,8 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ChangeDetectorRef } from '@angular/core';
 import { Translate } from '../services/translate';
-import { Location } from '@angular/common';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 
 
 @Component({
@@ -35,8 +35,8 @@ export class LibroPage implements OnInit {
     private alertCtrl: AlertController,
     private cdr: ChangeDetectorRef,
     private translate: Translate,
-    private location: Location,
-    private router: Router
+    private router: Router,
+    private navCtrl: NavController
     
   ) {
 const nav = this.router.getCurrentNavigation();
@@ -186,14 +186,10 @@ getLibroDetalle(id: string, tipo: string) {
 
 
 
- volverAtras() {
-    if (this.ultimaRuta) {
-      this.router.navigateByUrl(this.ultimaRuta);
-    } else {
-      this.router.navigate(['/tabs/destacados']);
-    }
-  }
 
+volverAtras() {
+  this.navCtrl.back();
+}
 
 
 

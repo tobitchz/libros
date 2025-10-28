@@ -20,11 +20,18 @@
   </ion-card>
 
   <ion-list>
-    <ion-list-header>Obras destacadas</ion-list-header>
-    <ion-item *ngFor="let obra of obras">
+    <ion-list-header>Obras destacadas del autor</ion-list-header>
+    <ion-item *ngFor="let obra of obras" (click)="verObra(obra)">
       <ion-label>
         <h2>{{ obra.title }}</h2>
-        <p>Año: {{ obra.year || 'Desconocido' }}</p>
+         <img
+    [src]="obra.covers?.length 
+      ? 'https://covers.openlibrary.org/b/id/' + obra.covers[0] + '-S.jpg' 
+      :  'assets/imagenes/sin_portada.jpg'"
+    alt="Portada del libro"
+    class="portada"
+  />
+      
       </ion-label>
     </ion-item>
   </ion-list>

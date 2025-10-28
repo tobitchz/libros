@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { Translate } from 'src/app/services/translate';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-autor',
@@ -18,13 +19,17 @@ export class AutorPage implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private location: Location,
-    private translate: Translate)
+    private translate: Translate,
+    private router: Router)
      {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) this.getAutor(id);
   }
+
+
+
 
   getAutor(id: string) {
     const urlAutor = `https://openlibrary.org/authors/${id}.json`;
@@ -36,7 +41,6 @@ export class AutorPage implements OnInit {
 
         let bio = this.autor.bio?.value || this.autor.bio;
 
-        // Si existe un paréntesis, cortar el bio antes de él
       if (bio && typeof bio === 'string') {
         const index = bio.indexOf('([');
         if (index !== -1) {
@@ -54,10 +58,27 @@ export class AutorPage implements OnInit {
     });
 
     this.http.get<any>(urlObras).subscribe({
-      next: (data) => (this.obras = data.entries || []),
+      next: (data) => {
+    this.obras = data.entries || [];
+    console.log('Obras del autor:', this.obras);
+  },
       error: (err) => console.error('Error cargando obras:', err),
+    
     });
+
+   
   }
+
+
+  verObra(obra: any) {
+  if (!obra.key) return;
+  const id = obra.key.replace('/works/', '');
+  this.router.navigate(['/libro', { id, tipo: 'works' }]);
+}
+
+
+
+
 
   volverAtras() {
  this.location.back();
