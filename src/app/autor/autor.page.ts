@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
+import { Translate } from 'src/app/services/translate';
 
 @Component({
   selector: 'app-autor',
@@ -16,7 +17,8 @@ export class AutorPage implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
-    private location: Location,)
+    private location: Location,
+    private translate: Translate)
      {}
 
   ngOnInit() {
@@ -29,7 +31,25 @@ export class AutorPage implements OnInit {
     const urlObras = `https://openlibrary.org/authors/${id}/works.json?limit=20`;
 
     this.http.get<any>(urlAutor).subscribe({
-      next: (data) => (this.autor = data),
+      next: (data) => {
+        this.autor = data;
+
+        let bio = this.autor.bio?.value || this.autor.bio;
+
+        // Si existe un paréntesis, cortar el bio antes de él
+      if (bio && typeof bio === 'string') {
+        const index = bio.indexOf('([');
+        if (index !== -1) {
+          bio = bio.substring(0, index).trim();
+        }
+      }
+
+        if (bio) {
+          this.translate.traducir(bio).subscribe(traduccionBio => {
+            this.autor.traduccionBio = traduccionBio;
+          });
+        }
+      },
       error: (err) => console.error('Error cargando autor:', err),
     });
 

@@ -14,7 +14,7 @@
       <ion-card-title>{{ autor.name }}</ion-card-title>
     </ion-card-header>
     <ion-card-content>
-      <p *ngIf="autor.bio">{{ autor.bio.value || autor.bio }}</p>
+      <p *ngIf="autor.bio">{{ autor.traduccionBio || autor.bio?.value || autor.bio }}</p>
       <p *ngIf="!autor.bio">Sin biografía disponible.</p>
     </ion-card-content>
   </ion-card>
@@ -24,7 +24,7 @@
     <ion-item *ngFor="let obra of obras">
       <ion-label>
         <h2>{{ obra.title }}</h2>
-        <p>Año: {{ obra.first_publish_date || 'Desconocido' }}</p>
+        <p>Año: {{ obra.year || 'Desconocido' }}</p>
       </ion-label>
     </ion-item>
   </ion-list>

@@ -77,13 +77,21 @@ getLibroDetalle(id: string, tipo: string) {
       this.libro = data;
       console.log('Detalle del libro:', this.libro);
 
-      const texto = this.libro.description?.value || this.libro.description;
+      let texto = this.libro.description?.value || this.libro.description;
       const titulo = this.libro.title;
       const publicado = this.libro.first_publish_date || 'Desconocido';
 
       // Esperar a que getAutoresSlug() termine
       const autor = await this.getAutoresSlug();
       this.libro.autor = autor;
+
+      // Si existe un paréntesis, cortar el texto antes de él
+      if (texto && typeof texto === 'string') {
+        const index = texto.indexOf('([');
+        if (index !== -1) {
+          texto = texto.substring(0, index).trim();
+        }
+      }
 
       if (texto) {
         this.translate.traducir(texto).subscribe(traduccionDescription => {
