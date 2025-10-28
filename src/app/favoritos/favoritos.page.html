@@ -53,7 +53,7 @@
       </div>
 
       <ion-list *ngIf="!favService.estaCargando() && favService.favoritos.length > 0">
-        <ion-item *ngFor="let libro of favService.favoritos" class="ion-margin-vertical" detail="false">
+        <ion-item *ngFor="let libro of favService.favoritos" class="ion-margin-vertical" detail="false" (click)="$event.stopPropagation(); libro.id && verDetalle(libro.id)">
           <ion-thumbnail slot="start" class="ion-margin-end">
             <img *ngIf="libro.portadaId" [src]="libro.obtenerPortada()" />
             <div *ngIf="!libro.portadaId" class="ion-text-center">
@@ -69,7 +69,7 @@
             </p>
           </ion-label>
 
-          <ion-button slot="end" color="danger" fill="clear" (click)="libro.id && eliminarFavorito(libro.id)"
+          <ion-button slot="end" color="danger" fill="clear" (click)="$event.stopPropagation(); libro.id && eliminarFavorito(libro.id)"
             [disabled]="favService.estaCargando()">
             <ion-icon name="trash-outline" slot="icon-only" size="large"></ion-icon>
           </ion-button>

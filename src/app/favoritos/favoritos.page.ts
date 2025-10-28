@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FavoritosService } from '../services/favoritos.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-favoritos',
@@ -10,6 +11,7 @@ import { FavoritosService } from '../services/favoritos.service';
 export class FavoritosPage {
 
   constructor(
+    private router: Router,
     public favService: FavoritosService
   ) { }
 
@@ -17,6 +19,7 @@ export class FavoritosPage {
    * Alterna el estado de favorito de un libro
    */
   async toggleFavorito(libroId: string): Promise<void> {
+    if (!libroId) return;
     try {
       await this.favService.toggleFavorito(libroId);
     } catch (error) {
@@ -51,27 +54,13 @@ export class FavoritosPage {
   }
 
   /**
-   * (de prueba) Verifica si un libro es favorito
-   */
-  async esFavorito(libroId: string): Promise<void> {
-    const esFav = this.favService.esFavorito(libroId);
-    console.log(`¿El libro ${libroId} es favorito?`, esFav);
-
-    if (esFav) {
-      this.mostrarMensaje('El libro está en favoritos');
-    } else {
-      this.mostrarMensaje('El libro NO está en favoritos');
-    }
-  }
-
-  /**
    * Recarga los favoritos desde la base de datos
    */
   async recargarFavoritos(): Promise<void> {
     try {
       await this.favService.recargarFavoritos();
       console.log('Favoritos recargados');
-      this.mostrarMensaje('Favoritos actualizados');
+      // this.mostrarMensaje('Favoritos actualizados');
     } catch (error) {
       console.error('Error al recargar favoritos:', error);
     }
@@ -91,19 +80,18 @@ export class FavoritosPage {
     try {
       await this.favService.limpiarFavoritos();
       console.log('Todos los favoritos eliminados');
-      this.mostrarMensaje('Favoritos eliminados');
+      // this.mostrarMensaje('Favoritos eliminados');
     } catch (error) {
       console.error('Error al limpiar favoritos:', error);
     }
   }
 
   /**
-   * (de prueba) Muestra un mensaje temporal (puedes implementar toast)
+   * Redirige a la vista de detalle del libro seleccionado.
+   * @param {any} libroId - Objeto que contiene los datos del libro seleccionado.
    */
-  private mostrarMensaje(mensaje: string): void {
-    // Aquí puedes implementar un toast service
-    console.log('Mensaje:', mensaje);
-    // Ejemplo con alerta básica:
-    // alert(mensaje);
+  verDetalle(libroId: any) {
+    this.router.navigate(['/libro', { id: libroId, tipo: "works" }]);
   }
+
 }
