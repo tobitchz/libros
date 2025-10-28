@@ -16,9 +16,10 @@ export class PestaniaConfigPage implements OnInit {
 
   nombreUsuario: string = '';
   email: string = '';
+  fotoUrl: string | null = null;
 
   constructor(private modalCtrl: ModalController,
-        private router: Router,
+    private router: Router,
     private authService: AuthService
   ) { }
 
@@ -27,7 +28,7 @@ export class PestaniaConfigPage implements OnInit {
 
     const temaModal = await this.modalCtrl.create({
       component: ModalTemaComponent,
-      breakpoints:[0, 0.3, 0.6, 1],
+      breakpoints: [0, 0.3, 0.6, 1],
       initialBreakpoint: 0.6,
       handle: true,
       backdropDismiss: true
@@ -42,11 +43,11 @@ export class PestaniaConfigPage implements OnInit {
 
 
 
-    async openCuentaModal() {
+  async openCuentaModal() {
 
     const cuentaModal = await this.modalCtrl.create({
       component: ModalCuentaComponent,
-      breakpoints:[0, 0.3, 0.6, 1],
+      breakpoints: [0, 0.3, 0.6, 1],
       initialBreakpoint: 0.6,
       handle: true,
       backdropDismiss: true
@@ -54,47 +55,48 @@ export class PestaniaConfigPage implements OnInit {
 
     await cuentaModal.present();
 
-    const { data, role } = await cuentaModal.onWillDismiss();
+    const { data, role } = await cuentaModal.onWillDismiss<{ foto?: string; nombre?: string }>();
 
-    if(role === 'confirm' && data?.nombre){
-      this.nombreUsuario = data.nombre;
-    }
 
-       
+    if (role === 'confirm') {
+      if (data?.nombre) this.nombreUsuario = data.nombre;
+      if (data?.foto) this.fotoUrl = data.foto;
+
+    } else {
       const user = await this.authService.obtenerUsuario();
       await user?.reload();
-      if(user?.displayName){
-        this.nombreUsuario = user.displayName
-      
+      if (user?.displayName) this.nombreUsuario = user.displayName;
+      this.fotoUrl = user?.photoURL ?? this.fotoUrl ?? localStorage.getItem('fotoPerfil');
     }
+
+
+
     console.log('Modal cerrado con:', data, role);
   }
 
-
- 
-
-
-
-  
-
-
   async ngOnInit() {
+    await this.cargarUsuario()
+  }
 
-     const user = await this.authService.obtenerUsuario();
-     await user?.reload();  
+  async ionWillEnter() {
+    await this.cargarUsuario();
+  }
+
+
+  private async cargarUsuario() {
+    const user = await this.authService.obtenerUsuario();
+    await user?.reload();
 
     if (user) {
-      if (user.email) { 
-        this.email = user.email;
-      }
+      this.email = user.email ?? '';
+      this.nombreUsuario = user.displayName ?? (user.email ? user.email.split('@')[0] : '');
+      this.fotoUrl = user.photoURL ?? null;
 
-      if (user.displayName) {
-        this.nombreUsuario = user.displayName;
-      } else {
-        if (user.email) {
-          const partes = user.email.split('@');
-          this.nombreUsuario = partes[0];
-        }
+      if (!this.fotoUrl) {
+        const local = localStorage.getItem('fotoPerfil');
+        if(local){
+           this.fotoUrl = local;
+          }
       }
     }
   }

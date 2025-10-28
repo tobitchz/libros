@@ -1,11 +1,19 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+
 import { getDatabase, ref, update, get, child, remove } from "firebase/database";
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+
+
 import { AngularFirestore } from '@angular/fire/compat/firestore';
 import { firstValueFrom, throwError } from 'rxjs';
 import { EmailAuthProvider } from 'firebase/auth';
 import { updatePassword, reauthenticateWithCredential } from 'firebase/auth';
 import { BehaviorSubject } from 'rxjs';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+import { finalize } from 'rxjs/operators';
+
+
 
 
 /** Identificador del usuario actualmente autenticado. */
@@ -31,13 +39,14 @@ export class AuthService {
   constructor(
     public ngFireAuth: AngularFireAuth,
     private firestore: AngularFirestore
-  ) { 
+  ) {
 
     this.ngFireAuth.onIdTokenChanged(() => {
-    this.checkAuthState();})
+      this.checkAuthState();
+    })
   }
 
-    
+
 
   /**
    * Verifica el estado de autenticación al inicializar el servicio
@@ -129,33 +138,33 @@ export class AuthService {
 
 
   async cambiarContrasenia(passActual: string, passNueva: string): Promise<void> {
-    const user = await this.ngFireAuth.currentUser;          
+    const user = await this.ngFireAuth.currentUser;
 
 
-    if (!user || !user.email){
-       throw new Error("auth/no-current-user");       
+    if (!user || !user.email) {
+      throw new Error("auth/no-current-user");
     }
 
- 
+
     const tienePassword = user.providerData.some(p => p?.providerId === 'password');
 
 
-    if(!tienePassword){
-       throw new Error('auth/no-password-provider');
+    if (!tienePassword) {
+      throw new Error('auth/no-password-provider');
     }
 
 
-    if(!passNueva || passNueva.length < 8){
-       throw new Error('auth/weak-password');
+    if (!passNueva || passNueva.length < 8) {
+      throw new Error('auth/weak-password');
     }
 
 
-    
+
     const cred = EmailAuthProvider.credential(user.email, passActual);
 
-    
-    await (user as any).reauthenticateWithCredential(cred);      
-    await (user as any).updatePassword(passNueva);                
+
+    await (user as any).reauthenticateWithCredential(cred);
+    await (user as any).updatePassword(passNueva);
   }
 
 
@@ -270,6 +279,52 @@ export class AuthService {
     })
   }
 
+  async subirFotoDePerfil(blob: Blob) : Promise<string> {
+
+    const user = await this.ngFireAuth.currentUser;
+
+    if(!user){
+
+      throw new Error('no hay usuario logeado')
+    }
+
+    const formData = new FormData();
+    
+    formData.append('file', blob);
+    formData.append('upload_preset', 'librosApp')
+    formData.append('cloud_name', 'dk5cbavtn')
+
+    
+    console.log("subiendo imagen") // 1
+    const res = await fetch(`https://api.cloudinary.com/v1_1/dk5cbavtn/image/upload`, {
+      method: 'POST',
+      body: formData
+    })
+
+    console.log('respuesta',res) // 2
+
+    const data = await res.json();
+    console.log('data', data); // 3
+
+
+
+    if(!data.secure_url){
+      throw new Error('no se pudo subir la imagen')
+    }
+
+    await (user as any).updateProfile({photoURL : data.secure_url})
+    await user.reload();
+
+    const imageUrl: string = String(data.secure_url)
+    localStorage.setItem('fotoPerfil', imageUrl)
+
+    return data.secure_url
+
+
+  }
+
+
+  
 
 
 }

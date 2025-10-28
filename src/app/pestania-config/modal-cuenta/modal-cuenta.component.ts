@@ -2,6 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { AlertController, ModalController } from '@ionic/angular';
 import { AuthService } from '../../services/auth';
 import { Router } from '@angular/router';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
+
+
+
+
 
 @Component({
   selector: 'app-modal-cuenta',
@@ -10,7 +15,7 @@ import { Router } from '@angular/router';
   standalone: false
 })
 export class ModalCuentaComponent implements OnInit {
-
+  fotoUrl :string | null = null;
 
 
   constructor(private modalCtrl: ModalController,
@@ -97,69 +102,65 @@ export class ModalCuentaComponent implements OnInit {
               return false;
             }
 
-            if(nuevaPassword.length < 8){
+            if (nuevaPassword.length < 8) {
               const err = await this.modalAlert.create({
-              header: 'Error',
-              message: 'La nueva contraseña debe tener al menos 8 caracteres.',
-              buttons: ['OK']
-            });
-            await err.present();
-            return false;
+                header: 'Error',
+                message: 'La nueva contraseña debe tener al menos 8 caracteres.',
+                buttons: ['OK']
+              });
+              await err.present();
+              return false;
             }
 
 
-            if(nuevaPassword !== repetirPassword){
+            if (nuevaPassword !== repetirPassword) {
 
               const err = await this.modalAlert.create({
-                header :' Error',
+                header: ' Error',
                 message: 'Las contraseñas no coinciden',
                 buttons: ['Ok']
               });
               await err.present();
               return false;
-
-
-
-
             }
 
 
             const loading = await this.modalAlert.create({
-            header: 'Actualizando...',
-            message: 'Un momento por favor',
-            backdropDismiss: false
-          });
-          await loading.present();
+              header: 'Actualizando...',
+              message: 'Un momento por favor',
+              backdropDismiss: false
+            });
+            await loading.present();
 
 
-           try {
-            await this.authService.cambiarContrasenia(password, nuevaPassword);
-            try { await loading.dismiss(); } catch {}
-            const ok = await this.modalAlert.create({
-              header: 'Exito',
-              message: 'La contraseña se actualizo correctamente.',
-              buttons: ['OK']
-            });
-            
-            await ok.present();
-            return true;
-          } catch (e: any) {
-            try { await loading.dismiss(); } catch {}
-            const msg = e?.message ?? 'Error al cambiar la contraseña.';
-            const err = await this.modalAlert.create({
-              header: 'Error',
-              message: msg,
-              buttons: ['OK']
-            });
-            await err.present();
-            return false;
+            try {
+              await this.authService.cambiarContrasenia(password, nuevaPassword);
+              try { await loading.dismiss(); } catch { }
+              const ok = await this.modalAlert.create({
+                header: 'Exito',
+                message: 'La contraseña se actualizo correctamente.',
+                buttons: ['OK']
+              });
+
+              await ok.present();
+              return true;
+            } catch (e: any) {
+              try { await loading.dismiss(); } catch { }
+              const msg = e?.message ?? 'Error al cambiar la contraseña.';
+              const err = await this.modalAlert.create({
+                header: 'Error',
+                message: msg,
+                buttons: ['OK']
+              });
+              await err.present();
+              return false;
+            }
           }
         }
-      }
-    ]
-  });
-  await alert.present();
-}
+      ]
+    });
+    await alert.present();
+  }
 
   private async eliminarCuenta(password: string) {
     const confirm = await this.modalAlert.create({
@@ -240,14 +241,55 @@ export class ModalCuentaComponent implements OnInit {
   }
 
 
+  
+    async cambiarFotoDePerfil() {
+        console.log('>>> abrir cámara'); // 1
+      const imagen = await Camera.getPhoto(
+        {
+          quality: 90,
+          allowEditing: false,
+          resultType: CameraResultType.Uri,
+          source : CameraSource.Prompt
+        })
+
+        console.log('>>> imagen tomada', imagen); // 2
 
 
+        if(!imagen.webPath){
+              console.log('>>> no hay imagen.webPath'); // 3
+          return;
+        }
+
+        const res = await fetch(imagen.webPath);
+        const blob = await res.blob() 
+        
+        console.log('>>> blob listo', blob.size, blob.type); // 4
+
+        try{
+          const url = await this.authService.subirFotoDePerfil(blob);
+          this.fotoUrl = url;
+          await this.modalCtrl.dismiss({ foto: url }, 'confirm');
+              console.log('>>> subida exitosa', url); // 5
+        }catch(e : any){
+          console.error('>>> error al subir', e); // 6
+          const err = await this.modalAlert.create({
+            header: 'Error',
+            message: 'No se pudo subir la imagen',
+            buttons : ['OK']
+            
+          })
+          await err.present();
+          
+        }
+    
+
+  }
 
   async logout() {
     try {
       await this.authService.cerrarSesion();
       await this.modalCtrl.dismiss();
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login']);  
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
     }

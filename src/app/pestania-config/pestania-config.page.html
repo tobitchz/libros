@@ -8,13 +8,13 @@
 
   <ion-item>
     <ion-avatar slot="start">
-      <img src="https://cdn-icons-png.flaticon.com/512/17/17004.png" alt="avatar" />
+      <img [src]="fotoUrl || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUrKeoX_Ddo2XEH34VLE1yQFyFDoIAp9AefQ&s'" alt="foto de perfil">
     </ion-avatar>
     <ion-label>
       <h2>{{nombreUsuario}}</h2>
       <p>{{email}}</p>
     </ion-label>
-   
+
   </ion-item>
 
 
@@ -33,7 +33,7 @@
 
 
 
-   <ion-list inset>
+  <ion-list inset>
     <ion-list-header>Apariencia</ion-list-header>
 
     <ion-item button detail="false" (click)="openTemaModal()">
@@ -46,7 +46,7 @@
 
 
 
-<ion-list inset>
+  <ion-list inset>
     <ion-list-header>Acerca de</ion-list-header>
 
     <ion-item lines="none">
