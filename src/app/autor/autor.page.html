@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ autor.name }}</ion-title>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>{{ autor.name }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p *ngIf="autor.bio">{{ autor.bio.value || autor.bio }}</p>
+      <p *ngIf="!autor.bio">Sin biografía disponible.</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-list>
+    <ion-list-header>Obras destacadas</ion-list-header>
+    <ion-item *ngFor="let obra of obras">
+      <ion-label>
+        <h2>{{ obra.title }}</h2>
+        <p>Año: {{ obra.first_publish_date || 'Desconocido' }}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

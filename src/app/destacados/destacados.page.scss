@@ -6,6 +6,8 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
+  max-height: 400px;
+  min-height: 250px;
 }
 
 .portada {
@@ -13,6 +15,8 @@
   height: auto;
   display: block;
   margin: 0 auto; // centra la imagen horizontalmente
+  max-height: 250px;
+  
 }
 
 .centrado {

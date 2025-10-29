@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-searchbar [debounce]="1000" (ionInput)="buscar($event)"></ion-searchbar>
+    <ion-searchbar (ionInput)="buscar($event)"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
@@ -10,10 +10,9 @@
       <ion-icon name="book-outline" style="padding-right: 10px;"></ion-icon>
       <ion-label>{{result.title}}</ion-label>
     </ion-item>
-    <ion-item *ngFor="let autor of autores">
+    <ion-item >
       <ion-icon name="person-outline"></ion-icon>
       <ion-label>
-        {{autor.author_name}}
       </ion-label>
     </ion-item>
   </ion-list>

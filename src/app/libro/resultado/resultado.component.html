@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar>
+    <div class="contenidoHeader">
+      <ion-button (click)="volverAtras()" fill="clear">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+      <ion-title>
+        {{libros.title || libros.titulo}}
+      </ion-title>
+    </div>
+  </ion-toolbar>
+
+</ion-header>
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let result of librosKey" (click)="presentAlert()">
+      <ion-label>
+        <div class="detalleLibro">
+          <img [src]="result.covers?.length 
+            ? 'https://covers.openlibrary.org/b/id/' + result.covers[0] + '-L.jpg' 
+            :  'assets/imagenes/sin_portada.jpg'" alt="Portada del libro" class="portada" />
+          <div class="detalleVariado">
+            <div>
+              <ion-label>
+                Titulo: {{result.title}}
+              </ion-label>
+            </div>
+            <div>
+              <ion-label>
+                Lugar de publicacion: {{result.publishers[0]}}
+              </ion-label>
+            </div>
+            <div>
+              <ion-label>
+                Año publicado: {{result.publish_date}}
+              </ion-label>
+            </div>
+            <div>
+              Etiquetas: {{result.subjects || "none"}}
+            </div>
+          </div>
+        </div>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
