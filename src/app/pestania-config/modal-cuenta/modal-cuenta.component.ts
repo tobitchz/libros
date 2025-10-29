@@ -77,9 +77,9 @@ export class ModalCuentaComponent implements OnInit {
       header: 'Cambia contraseña',
       message: 'Ingresá tu nueva contraseña ',
       inputs: [
-        { name: 'actual', type: 'password', placeholder: 'contraseña actual' },
-        { name: 'passwordNueva', type: 'password', placeholder: 'nueva contraseña' },
-        { name: 'passwordRepetida', type: 'password', placeholder: 'repeti contraseña' }
+        { name: 'actual', type: 'password', placeholder: 'Contraseña actual' },
+        { name: 'passwordNueva', type: 'password', placeholder: 'Nueva contraseña' },
+        { name: 'passwordRepetida', type: 'password', placeholder: 'Repetí contraseña' }
       ],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
@@ -196,7 +196,7 @@ export class ModalCuentaComponent implements OnInit {
       header: 'Cerrar sesion',
       message: 'Esta accion cerrara la sesion de tu cuenta ¿Queres continuar?',
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { text: 'Cancelar', role: 'Cancel' },
         {
           text: 'Cerrar sesion',
           role: 'destructive',
@@ -223,9 +223,9 @@ export class ModalCuentaComponent implements OnInit {
   async cambiarUsuario() {
     const alert = await this.modalAlert.create({
       header: 'Cambiar nombre de usuario',
-      inputs: [{ name: 'nombre', type: 'text', placeholder: 'nuevo nombre' }],
+      inputs: [{ name: 'nombre', type: 'text', placeholder: 'Nuevo nombre' }],
       buttons: [
-        { text: 'Cancelar', role: 'cancel' },
+        { text: 'Cancelar', role: 'Cancel' },
         {
           text: 'Guardar',
           handler: async ({ nombre }) => {
