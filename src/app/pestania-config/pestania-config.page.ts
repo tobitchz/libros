@@ -4,6 +4,7 @@ import { ModalTemaComponent } from './modal-tema/modal-tema.component';
 import { ModalCuentaComponent } from './modal-cuenta/modal-cuenta.component';
 import { Router } from '@angular/router';
 import { AuthService } from '.././services/auth';
+import { ThemeService, ThemePref } from '../services/theme';
 
 
 @Component({
@@ -20,7 +21,8 @@ export class PestaniaConfigPage implements OnInit {
 
   constructor(private modalCtrl: ModalController,
     private router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    public theme: ThemeService
   ) { }
 
 
@@ -36,8 +38,17 @@ export class PestaniaConfigPage implements OnInit {
 
     await temaModal.present();
 
-    const { data, role } = await temaModal.onWillDismiss();
-    console.log('Modal cerrado con:', data, role);
+    const { data, role } = await temaModal.onWillDismiss<any>();
+    console.log('[tema] onWillDismiss:', data, role);
+
+    const roleOk = role === 'confirm';
+    const pref = (typeof data === 'string' ? data : data?.pref) as ThemePref | undefined;
+
+    if (roleOk && pref) {
+      console.log('[tema] setPref ->', pref);
+      this.theme.setPref(pref);
+
+    }
   }
 
 
@@ -94,9 +105,9 @@ export class PestaniaConfigPage implements OnInit {
 
       if (!this.fotoUrl) {
         const local = localStorage.getItem('fotoPerfil');
-        if(local){
-           this.fotoUrl = local;
-          }
+        if (local) {
+          this.fotoUrl = local;
+        }
       }
     }
   }

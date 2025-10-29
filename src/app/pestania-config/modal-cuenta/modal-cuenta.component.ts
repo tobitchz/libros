@@ -102,10 +102,10 @@ export class ModalCuentaComponent implements OnInit {
               return false;
             }
 
-            if (nuevaPassword.length < 8) {
+            if (nuevaPassword.length < 6) {
               const err = await this.modalAlert.create({
                 header: 'Error',
-                message: 'La nueva contraseña debe tener al menos 8 caracteres.',
+                message: 'La nueva contraseña debe tener al menos 6 caracteres.',
                 buttons: ['OK']
               });
               await err.present();
@@ -229,10 +229,21 @@ export class ModalCuentaComponent implements OnInit {
         {
           text: 'Guardar',
           handler: async ({ nombre }) => {
+
             const nuevo = (nombre ?? '').trim();
-            if (!nuevo) return;
+            
+            if(nuevo.length > 16){
+              const err = await this.modalAlert.create({
+                header: 'Error',
+                message: 'El nombre de usuario no puede tener mas de 16 caracteres.',
+                buttons: ['OK']
+              });
+              await err.present();
+              return false;
+            }
             await this.authService.cambiarNombreUsuario(nuevo);
             await this.modalCtrl.dismiss({ nombre: nuevo }, 'confirm');
+            return;
           }
         }
       ]
