@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, map } from 'rxjs';
+import { Observable, forkJoin, map, switchMap, of } from 'rxjs';
+import { Translate } from './services/translate';
+
+
 
 /**
  * Servicio encargado de obtener libros destacados desde la API pública de OpenLibrary.
@@ -18,73 +21,112 @@ export class Proveedor {
   /**
    * @param httpClient Cliente HTTP de Angular utilizado para realizar peticiones a la API.
    */
-  constructor(private httpClient: HttpClient) {}
+  constructor(private httpClient: HttpClient, private translate: Translate) {}
 
 
-  /**
-   * Obtiene un conjunto de libros destacados.
-   * Combina tres búsquedas distintas:
-   * - Libros de Stephen King.
-   * - Clásicos ("Don Quijote").
-   * - Libros de ciencia.
-   *
-   * Cada búsqueda se limita a tres resultados en español.
-   *
-   * @returns Observable que emite un arreglo de libros combinados con su información básica.
-   * Cada libro contiene:
-   *  - `id`: identificador de la edición o de la obra.
-   *  - `tipo`: `"book"` o `"work"`, según el tipo de resultado.
-   *  - `titulo`: título del libro.
-   *  - `autor`: autor o “Desconocido”.
-   *  - `portada`: URL de la imagen de portada o `null` si no existe.
-   */
-  librosDestacados(): Observable<any[]> {
-    
-    const king$ = this.httpClient.get<any>(
-      'https://openlibrary.org/search.json?author=stephen+king&language=spa&limit=3'
-    );
-    const clasico$ = this.httpClient.get<any>(
-      'https://openlibrary.org/search.json?title=don+quijote&language=spa&limit=3'
-    );
-    const ciencia$ = this.httpClient.get<any>(
-      'https://openlibrary.org/search.json?subject=science&language=spa&limit=3'
-    );
 
-    return forkJoin([king$, clasico$, ciencia$]).pipe(
-      map(([kingRes, clasicoRes, cienciaRes]) => {
+/**
+ * @function librosDestacados
+ * @description Obtiene una lista de libros destacados con información completa incluyendo autores y portadas.
+ * 
+ * Esta función realiza las siguientes operaciones:
+ * 1. Consulta información básica de obras literarias predefinidas en Open Library
+ * 2. Obtiene información detallada de los autores de cada obra
+ * 3. Combina y transforma los datos en un formato estructurado
+ * 4. Proporciona URLs de portadas o una imagen por defecto cuando no está disponible
+ * 
+ * @returns {Observable<any[]>} Observable que emite un array de objetos con información de libros
+ * 
+ * @example
+ * // Uso en un componente Ionic
+ * librosDestacados().subscribe({
+ *   next: (libros) => {
+ *     console.log('Libros destacados:', libros);
+ *     this.libros = libros;
+ *   },
+ *   error: (error) => {
+ *     console.error('Error al obtener libros:', error);
+ *   }
+ * });
+ * 
+ * @example
+ * // Estructura del objeto libro devuelto:
+ * {
+ *   id: 'OL81633W',
+ *   tipo: 'works',
+ *   titulo: 'El Señor de los Anillos',
+ *   autor: 'J.R.R. Tolkien',
+ *   portada: 'https://covers.openlibrary.org/b/id/123456-M.jpg'
+ * }
+ * 
+ * @throws {Error} Puede lanzar errores de red o de parsing JSON si las APIs fallan
+ * 
+ * @remarks
+ * Las obras incluidas están predefinidas y corresponden a libros clásicos y populares.
+ * La función utiliza forkJoin para realizar múltiples peticiones HTTP en paralelo.
+ * 
+ * @see {@link https://openlibrary.org/developers/api|Open Library API}
+ * @see {@link https://rxjs.dev/api/index/function/forkJoin|RxJS forkJoin}
+ * @see {@link https://rxjs.dev/api/operators/switchMap|RxJS switchMap}
+ * 
+ */
 
-        const libros: any[] = [];
+librosDestacados(): Observable<any[]> {
+  const works = [
+    'OL81633W', 
+    'OL82563W', 
+    'OL2879525W', 
+    'OL17365W', 
+    'OL27448W', 
+    'OL15379W', 
+    'OL45804W', 
+    'OL8193416W', 
+    'OL98587W' 
+  ];
 
-        libros.push(...kingRes.docs.slice(0, 3));
-        libros.push(...cienciaRes.docs.slice(0, 3));
-        libros.push(...clasicoRes.docs.slice(0, 3));
-        
-       return libros.map(libro => {
-        if (libro.edition_key && libro.edition_key.length > 0) {
-          
-          return {
-            id: libro.edition_key[0],
-            tipo: 'books',
-            titulo: libro.title,
-            autor: libro.author_name ? libro.author_name.join(', ') : 'Desconocido',
-            portada: libro.cover_i
-              ? `https://covers.openlibrary.org/b/id/${libro.cover_i}-M.jpg`
-              : 'assets/imagenes/sin_portada.jpg'
-          };
-        } else {
-          
-          return {
-            id: libro.key.replace('/works/', ''), 
-            tipo: 'works',
-            titulo: libro.title,
-            autor: libro.author_name ? libro.author_name.join(', ') : 'Desconocido',
-            portada: libro.cover_i
-              ? `https://covers.openlibrary.org/b/id/${libro.cover_i}-M.jpg`
-              : 'assets/imagenes/sin_portada.jpg'
-          };
-        }
+  const requests = works.map(id =>
+    this.httpClient.get<any>(`https://openlibrary.org/works/${id}.json`)
+  );
+
+  return forkJoin(requests).pipe(
+    switchMap((results: any[]) => {
+      const authorRequests = results.map(libro => {
+        const authorKey = libro.authors?.[0]?.author?.key;
+        if (!authorKey) return of(null);
+        return this.httpClient.get<any>(`https://openlibrary.org${authorKey}.json`);
       });
+
+      return forkJoin(authorRequests).pipe(
+        switchMap(authors => {
+          // traducir títulos en paralelo
+          const traducciones = results.map(libro =>
+            this.translate.traducir(libro.title)
+          );
+
+          return forkJoin(traducciones).pipe(
+            map(titulosTraducidos => {
+              return results.map((libro, i) => {
+                const autor = authors[i]?.name || 'Desconocido';
+                const titulo = titulosTraducidos[i] || libro.title;
+
+                return {
+                  id: libro.key.replace('/works/', ''),
+                  tipo: 'works',
+                  titulo,
+                  autor,
+                  portada: libro.covers?.length
+                    ? `https://covers.openlibrary.org/b/id/${libro.covers[0]}-M.jpg`
+                    : 'assets/imagenes/sin_portada.jpg'
+                };
+              });
+            })
+          );
+        })
+      );
     })
   );
 }
+
+
+
 }

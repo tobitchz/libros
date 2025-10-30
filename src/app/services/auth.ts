@@ -71,7 +71,6 @@ export class AuthService {
   async iniciarSesion(email: string, password: string) {
     const user = await this.ngFireAuth.signInWithEmailAndPassword(email, password);
     if (user) {
-      console.log(user);
       this.isAuthenticatedSubject.next(true);
     } else {
       this.isAuthenticatedSubject.next(false);

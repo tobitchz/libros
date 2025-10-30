@@ -30,7 +30,21 @@ export class AutorPage implements OnInit {
 
 
 
-
+/**
+ * Obtiene los datos del autor y sus obras desde la API de OpenLibrary.
+ * 
+ * Realiza dos peticiones HTTP: una para los detalles del autor (`/authors/{id}.json`)
+ * y otra para sus obras (`/authors/{id}/works.json`), limitadas a 20 resultados.
+ * 
+ * Además, si la biografía (`bio`) está disponible, la envía al servicio de traducción
+ * para obtener una versión traducida al idioma configurado.
+ * 
+ * @param {string} id - Identificador único del autor en OpenLibrary.
+ * @returns {void}
+ * 
+ * @example
+ * this.getAutor('OL23919A'); // Obtiene los datos de Gabriel García Márquez
+ */
   getAutor(id: string) {
     const urlAutor = `https://openlibrary.org/authors/${id}.json`;
     const urlObras = `https://openlibrary.org/authors/${id}/works.json?limit=20`;
@@ -60,7 +74,6 @@ export class AutorPage implements OnInit {
     this.http.get<any>(urlObras).subscribe({
       next: (data) => {
     this.obras = data.entries || [];
-    console.log('Obras del autor:', this.obras);
   },
       error: (err) => console.error('Error cargando obras:', err),
     
@@ -69,7 +82,12 @@ export class AutorPage implements OnInit {
    
   }
 
-
+/**
+ * @function verObra
+ * @description Navega a la página de detalles de una obra literaria
+ * @param {any} obra - Objeto obra que contiene la información de la obra
+ * @returns {void}
+ */
   verObra(obra: any) {
   if (!obra.key) return;
   const id = obra.key.replace('/works/', '');
@@ -79,7 +97,11 @@ export class AutorPage implements OnInit {
 
 
 
-
+/**
+ * @function volverAtras
+ * @description Navega a la página anterior en el historial
+ * @returns {void}
+ */
   volverAtras() {
  this.location.back();
  }

@@ -18,6 +18,7 @@ ion-button{
 
 .titulo{
   text-align: center;
+  margin-left: 30px;
 }
 
 .autor{
@@ -25,4 +26,8 @@ ion-button{
   align-items: center;
   justify-content: start;
   flex-direction: row;
+}
+
+.lista-autor{
+  min-width: 200px;
 }

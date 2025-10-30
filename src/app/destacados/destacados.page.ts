@@ -46,7 +46,6 @@ export class DestacadosPage implements OnInit {
     // cargar libros destacados al iniciar
     this.proveedor.librosDestacados().subscribe(data => {
       this.libros = data;
-      console.log('Libros destacados:', this.libros);
     });
   }
 
@@ -62,6 +61,7 @@ export class DestacadosPage implements OnInit {
 
     /**
    * Alterna el estado de favorito de un libro
+   * @param {string} libroId -id o key del libro
    */
   async toggleFavorito(libroId: string | null): Promise<void> {
     if (!libroId) return;
@@ -74,6 +74,7 @@ export class DestacadosPage implements OnInit {
 
   /**
    * Verifica si el libro actual está en favoritos
+   * * @param {string} libroId -id o key del libro
    */
   esFavorito(libroId: string | null) {
     return libroId ? this.favService.esFavorito(libroId) : false;
