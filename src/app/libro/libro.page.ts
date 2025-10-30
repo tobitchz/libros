@@ -171,6 +171,12 @@ const nav = this.router.getCurrentNavigation();
             // Abrir el link en una nueva pestaña
             window.open('https://www.amazon.es/s?k=' + titulo + '-' + autor);
           }
+        },
+        {
+          text:'Better Worls Books',
+          handler: ()=>{
+            window.open('https://www.betterworldbooks.com/search/results?q='+ titulo + '%20' + autor) 
+          }
         }
       ]
     });
@@ -214,11 +220,12 @@ volverAtras() {
   esFavorito() {
     return this.libroId ? this.favService.esFavorito(this.libroId) : false;
   }
+
   async openModal(libro: any) {
     const modal = await this.modalCtrl.create({
       component: ResultadoComponent,
       componentProps : {
-        libro : libro
+        libros : libro
       }
     });
     modal.present();

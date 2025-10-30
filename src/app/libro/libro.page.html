@@ -39,8 +39,8 @@
         <ion-card-subtitle>{{ libro?.publicado || 'Desconocido'}}</ion-card-subtitle>  
           
       </ion-card-header>
-      <ion-button>
-        
+      <ion-button (click)="openModal(libro)" expand="block">
+        Ediciones
       </ion-button>
     </ion-card>
   </ng-container>

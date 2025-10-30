@@ -13,7 +13,7 @@
 </ion-header>
 <ion-content>
   <ion-list>
-    <ion-item *ngFor="let result of librosKey" (click)="presentAlert()">
+    <ion-item *ngFor="let result of librosKey" (click)="presentAlert(result)">
       <ion-label>
         <div class="detalleLibro">
           <img [src]="result.covers?.length 
