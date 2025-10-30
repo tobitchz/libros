@@ -97,6 +97,10 @@ export class ResultadoComponent implements OnInit {
     }
 
   }
+  /**
+   * @function volverAtras
+   * @description Lo que hace esta funcion es cerra el modal y mostrar directamente el card del libro buscado
+   */
   volverAtras() {
     this.modalCtr.dismiss()
   }
