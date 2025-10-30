@@ -11,6 +11,8 @@ import { AuthService } from '../services/auth';
 })
 export class TabsPage {
 
+  fotoURL : string | null = null
+
   constructor(
     private router: Router,
     private authService: AuthService
