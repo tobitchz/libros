@@ -28,19 +28,20 @@
         </ion-card-subtitle>
         <br>
           <ion-card-title>Autor</ion-card-title>
-         <ion-card-subtitle class="autor">
-
-        {{ libro.autor }}
-
-          <ion-button *ngIf="libro.authors?.length" fill="clear" (click)="verAutor(libro)">
-        <ion-icon name="arrow-forward-outline"></ion-icon>
-      </ion-button>
-        
-        </ion-card-subtitle>
+        <ion-card-subtitle class="autor">
+      <ion-list class="lista-autor">
+        <ion-item *ngFor="let a of libro.authors">
+          <ion-label>{{ a.author?.name || 'Desconocido' }}</ion-label>
+          <ion-button fill="clear" (click)="verAutor(a)">
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-card-subtitle>
              
         
         <ion-card-title>Primera edición</ion-card-title>
-        <ion-card-subtitle>{{ libro?.publicado || 'Desconocido'}}</ion-card-subtitle>  
+        <ion-card-subtitle>{{ libro?.publicado || libro?.first_publish_date || 'Desconocido'}}</ion-card-subtitle>  
           
       </ion-card-header>
     </ion-card>

@@ -7,6 +7,8 @@ import { Translate } from '../services/translate';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { FavoritosService } from '../services/favoritos.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 
 @Component({
@@ -77,7 +79,8 @@ getLibroDetalle(id: string, tipo: string) {
   this.http.get(url).subscribe({
     next: async (data) => { // <--- marcá el callback como async
       this.libro = data;
-      console.log('Detalle del libro:', this.libro);
+
+     this.cargarNombresAutores();
 
       let texto = this.libro.description?.value || this.libro.description;
       const titulo = this.libro.title;
@@ -117,17 +120,28 @@ getLibroDetalle(id: string, tipo: string) {
   
 
 
-
+/**
+ * Obtiene un *slug* generado a partir de los nombres de los autores del libro actual.
+ * 
+ * La función consulta la API de OpenLibrary para recuperar los nombres de los autores
+ * asociados a la obra almacenada en `this.libro`, normaliza los textos y los une en un
+ * solo string separado por guiones.
+ * 
+ * @async
+ * @returns {Promise<string>} Cadena con los nombres de los autores concatenados en formato slug.
+ * 
+ * @example
+ * const slug = await this.getAutoresSlug();
+ * // Resultado posible: "gabriel-garcia-marquez"
+ */
    async getAutoresSlug(): Promise<string> {
      if (!this.libro || !this.libro.authors) return 'Desconocido';
 
-
-  //   // array de Promesas para cada autor
     const promesas = this.libro.authors.map(async (a: any) => {
       const fullKey = a.author?.key;
       if (fullKey) {
         try {
-          const authorId = fullKey.split('/').pop(); // solo la KEY del autor 
+          const authorId = fullKey.split('/').pop(); 
           const authorData: any = await this.http.get(`https://openlibrary.org/authors/${authorId}.json`).toPromise();
           return authorData.name.normalize('NFD')
             .replace(/\s+/g, ' ');             
@@ -144,7 +158,11 @@ getLibroDetalle(id: string, tipo: string) {
   }
 
 
-
+/**
+ * @function mostrarAlerta
+ * @description Muestra una alerta con opciones para comprar el libro en diferentes plataformas
+ * @returns {Promise<void>}
+ */
   async mostrarAlerta() {
     const titulo = this.libro?.title || "libro"; // libro slug
     const autor = await this.getAutoresSlug(); // autor slug
@@ -157,14 +175,12 @@ getLibroDetalle(id: string, tipo: string) {
         {
           text: 'Mercado Libre',
           handler: () => {
-            // Abrir el link en una nueva pestaña
             window.open('https://listado.mercadolibre.com.ar/' + titulo + '-' + autor);
           }
         },
         {
           text: 'Amazon',
           handler: () => {
-            // Abrir el link en una nueva pestaña
             window.open('https://www.amazon.es/s?k=' + titulo + '-' + autor);
           }
         }
@@ -175,20 +191,105 @@ getLibroDetalle(id: string, tipo: string) {
   }
 
 
- verAutor(libro: any) {
-  const authorKey = libro?.authors?.[0]?.author?.key;
-  if (!authorKey) {
-    console.error('Libro sin author_key');
-    return;
-  }
+
+/**
+ * @function cargarNombresAutores
+ * @description Carga y completa los nombres de los autores de un libro consultando la API de Open Library.
+ * 
+ * Esta función realiza las siguientes operaciones:
+ * 1. Verifica que el libro tenga autores definidos y que sea un array válido
+ * 2. Para cada autor, extrae su ID y realiza una petición HTTP a la API de Open Library
+ * 3. Maneja errores individuales de cada petición sin interrumpir el proceso completo
+ * 4. Actualiza los nombres de los autores en el objeto libro original
+ * 
+ * @returns {void} No retorna ningún valor, actualiza el objeto `this.libro` directamente
+ * 
+ * @example
+ * // Uso en un componente Ionic/Angular
+ * ngOnInit() {
+ *   this.obtenerLibro().then(() => {
+ *     this.cargarNombresAutores();
+ *   });
+ * }
+ * 
+ * @example
+ * // Estructura esperada de this.libro.authors:
+ * [
+ *   { author: { key: '/authors/OL12345A' } },
+ *   { author: { key: '/authors/OL67890B' } }
+ * ]
+ * 
+ * // Después de ejecutar la función:
+ * [
+ *   { author: { key: '/authors/OL12345A', name: 'J.K. Rowling' } },
+ *   { author: { key: '/authors/OL67890B', name: 'Stephen King' } }
+ * ]
+ * 
+ * @throws {Error} Logs errores en la consola pero no interrumpe la ejecución gracias al manejo con catchError
+ * 
+ * @remarks
+ * - La función es segura y no falla si el libro no tiene autores o la estructura es incorrecta
+ * - Utiliza forkJoin para realizar todas las peticiones HTTP en paralelo
+ * - Cada petición individual está protegida con manejo de errores
+ * - Los autores sin nombre se mantienen como null
+ * 
+ * @see {@link https://openlibrary.org/dev/docs/api/authors|Open Library Authors API}
+ * @see {@link https://rxjs.dev/api/index/function/forkJoin|RxJS forkJoin}
+ * @see {@link https://rxjs.dev/api/operators/catchError|RxJS catchError}
+ * 
+ */
+cargarNombresAutores() {
+  if (!this.libro?.authors || !Array.isArray(this.libro.authors) || this.libro.authors.length === 0) return;
+
+  const requests = this.libro.authors.map((a: any) => {
+    const key = a?.author?.key;
+    if (!key) return of({ name: null });
+    const id = key.replace('/authors/', '');
+    return this.http.get<any>(`https://openlibrary.org/authors/${id}.json`).pipe(
+      map(res => ({ name: res?.name || null })),
+      catchError(err => {
+        console.warn('Error al cargar autor', key, err);
+        return of({ name: null });
+      })
+    );
+  });
+
+  forkJoin(requests).subscribe({
+    next: (results) => {
+      if (!Array.isArray(results)) {
+        console.warn('Resultados inválidos en forkJoin');
+        return;
+      }
+      results.forEach((res, i) => {
+        if (this.libro.authors[i] && this.libro.authors[i].author) {
+          this.libro.authors[i].author.name = res.name || null;
+        }
+      });
+     
+    },
+    error: (err) => console.error('Error general en forkJoin:', err)
+  });
+}
+
+
+/**
+ * @function verAutor
+ * @description Navega a la página de detalles de un autor
+ * @param {any} author - Objeto autor que contiene la información del autor
+ * @returns {void}
+ */
+ verAutor(author: any) {
+  const authorKey = author?.author?.key;
+  if (!authorKey) return;
 
   const id = authorKey.replace('/authors/', '');
   this.router.navigate(['/autor', id]);
 }
 
 
-
-
+ /**
+   * Volver atras usando función nativa del telefono
+   */
 volverAtras() {
   this.navCtrl.back();
 }
