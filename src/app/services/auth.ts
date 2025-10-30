@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { getDatabase, ref, update } from "firebase/database";
-import { BehaviorSubject } from 'rxjs';
-
+import { getDatabase, ref, update, remove } from 'firebase/database';
+import {
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
+  updateProfile,
+  User
+} from 'firebase/auth';
+import { BehaviorSubject, firstValueFrom } from 'rxjs';
 /**
  * Servicio de autenticación con Firebase.
  * Maneja el registro, inicio y cierre de sesión, y la escritura de datos del usuario.
@@ -62,6 +68,130 @@ export class AuthService {
     return userCredential.user;
   }
 
+
+  /**
+   * @method eliminarCuenta()
+   * 
+   * 
+   * @param password password para reautenticar
+   * 
+   * 
+   * elimina la cuenta del usuario actual
+   * 
+   * verifica que haya usuario logeado y que tenga email, reautentica con password e email (eso lo piide FireBase)
+   *  
+   * borra el usuario en realtime DB
+   * 
+   * elimina la cuenta y cierra la sesion
+   * 
+   */
+
+
+  async eliminarCuenta(password: string) {
+
+    try {
+      const user = await firstValueFrom(this.ngFireAuth.user);
+      if (!user) {
+        throw new Error("no hay usuario logeado")
+      }
+
+      if (!user.email) {
+        throw new Error('El usuario no tiene email registrado');
+      } // esto valida y avisa que el strin no es nulll
+
+      const credential = EmailAuthProvider.credential(user.email, password);
+
+      await (user as any).reauthenticateWithCredential(credential)
+
+      const db = getDatabase();
+      const userRef = ref(db, `users/${user.uid}`);
+      await remove(userRef)
+
+
+
+      await user.delete();
+
+      await this.ngFireAuth.signOut();
+
+      console.log('usuario eliminado correctamente');
+      return true;
+    } catch (err: any) {
+      console.error("error al eliminar la cuenta:", err);
+
+      throw err;
+    }
+  }
+
+
+  /**
+   * @method tieneProvider()
+   * 
+   * indica si el usuario actual tiene vinculado el provider de email/password
+   * esto es para saber si se puede cambiar la contrasenia
+   * 
+   * @return devuelve true si tiene provider y false si no 
+   */
+
+  async tieneProvider(): Promise<boolean> {
+    const user = await this.ngFireAuth.currentUser;
+    if (!user) {
+      return false;
+    }
+    return user.providerData.some(p => p?.providerId === 'password');
+  }
+
+  
+
+  /**
+   * 
+   * @method cambiarContrasenia()
+   * 
+   * 
+   * @param passActual password actual del usuario
+   * @param passNueva nueva password a establecer
+   * 
+   * cambia la password del usuario autenticado
+   * 
+   * el usuario debe ya haber iniciado con provider,se debe reautenticar con la password actual
+   * y se valida que la nueva password tenga al menos 6 caracteres
+   * 
+   * 
+   * 
+   */
+
+  async cambiarContrasenia(passActual: string, passNueva: string): Promise<void> {
+    const user = await this.ngFireAuth.currentUser;
+
+
+    if (!user || !user.email) {
+      throw new Error("auth/no-current-user");
+    }
+
+
+    const tienePassword = user.providerData.some(p => p?.providerId === 'password');
+
+
+    if (!tienePassword) {
+      throw new Error('auth/no-password-provider');
+    }
+
+
+    if (!passNueva || passNueva.length < 6) {
+      throw new Error('auth/weak-password');
+    }
+
+
+
+    const cred = EmailAuthProvider.credential(user.email, passActual);
+
+
+    await (user as any).reauthenticateWithCredential(cred);
+    await (user as any).updatePassword(passNueva);
+  }
+
+
+
+
   /**
    * Inicia sesión con email y contraseña.
    * @param email Correo electrónico.
@@ -115,7 +245,36 @@ export class AuthService {
     return await this.ngFireAuth.currentUser;
   }
 
-  async cambiarNombreUsuario(nuevoNombre: string): Promise<void> {
+    /**
+   * @method refreshUser()
+   * 
+   * fuerza la recarga de los datos del usuario autenticado desde Firebase
+   * 
+   * se usa para actualizar el estado local si hubo cambios en displayName, photoURL, etc.
+   * 
+   * @returns el usuario actualizado o null si no hay sesión
+   */
+  async refreshUser() {
+    const user = await this.ngFireAuth.currentUser;
+    if (user) {
+      await user.reload();
+      return await this.ngFireAuth.currentUser; // devuelve el user actualizado
+    }
+    return null;
+  }
+
+
+  /**
+   * @method cambiarNombreUsuario()
+   * 
+   * 
+   * @param nuevoNombre es el nuevo nombre a asignar
+   * 
+   * cambia el nnombre de usuario del perfil actual en FireBase y lo actualiza en
+   * la realtime DB
+   *
+   */
+  async cambiarNombreUsuario(nuevoNombre: string){
     const user = await this.ngFireAuth.currentUser;
     if (!user || !user.uid) throw new Error('no hay usuario logueado');
 
@@ -154,4 +313,74 @@ export class AuthService {
       id: userId
     })
   }
+
+
+
+    /**
+     * 
+     * @method subirFotoDePerfil()
+     * 
+     * sube la foto de perfil autenticado a cloudinary
+     * y actualiza el perfil en Firebase con la nueva url
+     * 
+     * @param blob imagen en formato blob
+     * 
+     *  verifica que exista un usuario autenticado, envia la imagen al cloudinary y recibe
+     *  la url de respuesta
+     * 
+     *  guarda tambienla url en el localStorage 
+     * 
+     * 
+     * use Cloudinary pq FireBase no permite subir archivos directamente y este me parecia mas comodo  
+     * 
+     * 
+     */
+  async subirFotoDePerfil(blob: Blob) : Promise<string> {
+
+    const user = await this.ngFireAuth.currentUser;
+
+    if(!user){
+
+      throw new Error('no hay usuario logeado')
+    }
+
+    const formData = new FormData();
+    
+    formData.append('file', blob);
+    formData.append('upload_preset', 'librosApp')
+    formData.append('cloud_name', 'dk5cbavtn')
+
+    
+    console.log("subiendo imagen") // 1
+    const res = await fetch(`https://api.cloudinary.com/v1_1/dk5cbavtn/image/upload`, {
+      method: 'POST',
+      body: formData
+    })
+
+    console.log('respuesta',res) // 2
+
+    const data = await res.json();
+    console.log('data', data); // 3
+
+
+
+    if(!data.secure_url){
+      throw new Error('no se pudo subir la imagen')
+    }
+
+    await (user as any).updateProfile({photoURL : data.secure_url})
+    await user.reload();
+
+    const imageUrl: string = String(data.secure_url)
+    localStorage.setItem('fotoPerfil', imageUrl)
+
+    return data.secure_url
+
+
+  }
+
+
+  
+
+
 }

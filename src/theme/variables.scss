@@ -1,6 +1,47 @@
-// For information on how to create your own theme, please see:
-// http://ionicframework.com/docs/theming/
-.modal {
-    --width: 100%;
-    --height: 100%;
+:root {
+  --ion-background-color: #f2f3f5;
+  --ion-background-color-rgb: 242,243,245;
+  --ion-text-color: #1a1a1d;
+  --ion-text-color-rgb: 26,26,29;
+
+  --ion-card-background: #ffffff;
+  --ion-item-background: #fafafa;
+
+  --ion-toolbar-background: #f7f8fa;
+  --ion-toolbar-color: var(--ion-text-color);
+
+  --ion-color-primary: #3b82f6;
+  --ion-color-primary-rgb: 59,130,246;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-shade: #336fd6;
+  --ion-color-primary-tint: #5b9ef8;
+
+  --tabbar-bg: var(--ion-card-background);
+  --tabbar-color: #667085;
+  --tabbar-color-selected: var(--ion-color-primary);
+}
+
+html.dark,
+body.dark,
+.dark {
+  --ion-background-color: #121418;
+  --ion-background-color-rgb: 18,20,24;
+  --ion-text-color: #e8e9eb;
+  --ion-text-color-rgb: 232,233,235;
+
+  --ion-card-background: #181b20;
+  --ion-item-background: #1a1d22;
+
+  --ion-toolbar-background: #16181c;
+  --ion-toolbar-color: var(--ion-text-color);
+
+  --ion-color-primary: #60a5fa;
+  --ion-color-primary-rgb: 96,165,250;
+  --ion-color-primary-contrast: #0b0f1a;
+  --ion-color-primary-shade: #518cd7;
+  --ion-color-primary-tint: #79b6fb;
+
+  --tabbar-bg: #16181c;
+  --tabbar-color: #98a2b3;
+  --tabbar-color-selected: var(--ion-color-primary);
 }
