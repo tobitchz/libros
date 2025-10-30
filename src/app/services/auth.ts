@@ -12,6 +12,10 @@ import { updatePassword, reauthenticateWithCredential } from 'firebase/auth';
 import { BehaviorSubject } from 'rxjs';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import { finalize } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
+
+
 
 
 
@@ -26,12 +30,17 @@ export var currentUserId: any
  */
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
+  
 })
 
+
 export class AuthService {
+  
+  public readonly user$!: Observable<any>;
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated = this.isAuthenticatedSubject.asObservable();
+  
 
   /**
    * @param ngFireAuth Módulo de autenticación de AngularFire.
@@ -40,7 +49,7 @@ export class AuthService {
     public ngFireAuth: AngularFireAuth,
     private firestore: AngularFirestore
   ) {
-
+    this.user$ = this.ngFireAuth.authState.pipe(distinctUntilChanged());
     this.ngFireAuth.onIdTokenChanged(() => {
       this.checkAuthState();
     })
@@ -249,6 +258,13 @@ export class AuthService {
     const reference = ref(db, 'users/' + user.uid);
     await update(reference, { nombre: nuevoNombre });
   }
+
+  async refreshUser() {
+    const u = await this.ngFireAuth.currentUser;
+    await u?.reload();
+    return this.ngFireAuth.currentUser;
+  }
+
 
 
 

@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ModalTemaComponent } from './modal-tema/modal-tema.component';
 import { ModalCuentaComponent } from './modal-cuenta/modal-cuenta.component';
 import { Router } from '@angular/router';
 import { AuthService } from '.././services/auth';
 import { ThemeService, ThemePref } from '../services/theme';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -13,11 +14,14 @@ import { ThemeService, ThemePref } from '../services/theme';
   styleUrls: ['./pestania-config.page.scss'],
   standalone: false
 })
-export class PestaniaConfigPage implements OnInit {
+export class PestaniaConfigPage implements OnInit, OnDestroy {
 
   nombreUsuario: string = '';
   email: string = '';
   fotoUrl: string | null = null;
+
+  private sub?: Subscription;
+
 
   constructor(private modalCtrl: ModalController,
     private router: Router,
@@ -25,6 +29,33 @@ export class PestaniaConfigPage implements OnInit {
     public theme: ThemeService
   ) { }
 
+
+   async ngOnInit() {
+    await this.cargarUsuario()
+
+     this.sub = this.authService.user$.subscribe(u => {
+      if (u) {
+        this.email = u.email ?? '';
+        this.nombreUsuario = u.displayName ?? (u.email ? u.email.split('@')[0] : '');
+        // uso photoURL si existe; si no, recién ahí caigo al fallback local
+        this.fotoUrl = u.photoURL ?? localStorage.getItem('fotoPerfil');
+      } else {
+        this.email = '';
+        this.nombreUsuario = '';
+        this.fotoUrl = null;
+      }
+    });
+  }
+
+  async ionWillEnter() {
+    await this.cargarUsuario();
+    await this.authService.refreshUser();
+
+  }
+
+    ngOnDestroy() {
+    this.sub?.unsubscribe();
+  }
 
   async openTemaModal() {
 
@@ -78,6 +109,7 @@ export class PestaniaConfigPage implements OnInit {
       await user?.reload();
       if (user?.displayName) this.nombreUsuario = user.displayName;
       this.fotoUrl = user?.photoURL ?? this.fotoUrl ?? localStorage.getItem('fotoPerfil');
+      await this.authService.refreshUser();
     }
 
 
@@ -85,13 +117,7 @@ export class PestaniaConfigPage implements OnInit {
     console.log('Modal cerrado con:', data, role);
   }
 
-  async ngOnInit() {
-    await this.cargarUsuario()
-  }
-
-  async ionWillEnter() {
-    await this.cargarUsuario();
-  }
+ 
 
 
   private async cargarUsuario() {
