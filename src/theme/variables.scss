@@ -34,6 +34,10 @@ body.dark,
 
   --ion-card-background: #181b20;
   --ion-item-background: #1a1d22;
+  --ion-searchbar-background: var(--ion-item-background);
+  --ion-searchbar-color: var(--ion-text-color);
+  --ion-placeholder-color: #9ca3af;
+  --ion-icon-color: #b5bac3;
 
   --ion-toolbar-background: #16181c;
   --ion-toolbar-color: var(--ion-text-color);

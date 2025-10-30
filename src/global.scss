@@ -80,4 +80,11 @@ body.dark ion-card-content {
   color: var(--ion-card-subtitle);
 }
 
+html.dark ion-searchbar,
+body.dark ion-searchbar {
+  --background: var(--ion-item-background);
+  --color: var(--ion-text-color);
+  --placeholder-color: var(--ion-placeholder-color);
+  --icon-color: #b5bac3;
+}
 
