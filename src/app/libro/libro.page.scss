@@ -15,3 +15,14 @@ ion-button{
   left: 0px;
   z-index: 10;
 }
+
+.titulo{
+  text-align: center;
+}
+
+.autor{
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  flex-direction: row;
+}

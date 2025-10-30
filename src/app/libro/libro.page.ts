@@ -4,12 +4,11 @@ import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ChangeDetectorRef } from '@angular/core';
 import { Translate } from '../services/translate';
-import { Location } from '@angular/common';
 import { Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
+import { FavoritosService } from '../services/favoritos.service';
 import { ModalController } from '@ionic/angular';
 import { ResultadoComponent } from './resultado/resultado.component';
-
-
 
 
 @Component({
@@ -23,26 +22,35 @@ import { ResultadoComponent } from './resultado/resultado.component';
 export class LibroPage implements OnInit {
   libroId: string | null = null;
   libro: any;
-
-  /**
-     * Inyecta las dependencias necesarias para obtener parámetros de ruta,
-     * realizar solicitudes HTTP y mostrar alertas.
-     * @param {ActivatedRoute} route - Módulo que permite acceder a los parámetros de la ruta actual.
-     * @param {HttpClient} http - Cliente HTTP para obtener los datos del libro y del autor.
-     * @param {AlertController} alertCtrl - Controlador para generar alertas en la interfaz.
-     * @param {ChangeDetectorRef} cdr - Fuerza actualización del template para la traducción
-     */
+  
+  private ultimaRuta: string | null = null;
+/**
+   * Inyecta las dependencias necesarias para obtener parámetros de ruta,
+   * realizar solicitudes HTTP y mostrar alertas.
+   * @param {ActivatedRoute} route - Módulo que permite acceder a los parámetros de la ruta actual.
+   * @param {HttpClient} http - Cliente HTTP para obtener los datos del libro y del autor.
+   * @param {AlertController} alertCtrl - Controlador para generar alertas en la interfaz.
+   * @param {ChangeDetectorRef} cdr - Fuerza actualización del template para la traducción
+   */
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient,
     private alertCtrl: AlertController,
     private cdr: ChangeDetectorRef,
     private translate: Translate,
-    private location: Location,
     private router: Router,
-    private modalCtrl: ModalController,
-
-  ) { }
+    private navCtrl: NavController,
+    public favService: FavoritosService,
+    public modalCtrl : ModalController
+    
+  ) {
+const nav = this.router.getCurrentNavigation();
+    // Guarda la URL desde donde vino, si existe y no es /autor
+    const prevUrl = nav?.previousNavigation?.finalUrl?.toString();
+    if (prevUrl && !prevUrl.startsWith('/autor')) {
+      this.ultimaRuta = prevUrl;
+    }
+  }
 
 
   /**
@@ -73,32 +81,42 @@ export class LibroPage implements OnInit {
         this.libro = data;
         console.log('Detalle del libro:', this.libro);
 
-        const texto = this.libro.description?.value || this.libro.description;
-        const titulo = this.libro.title;
-        const publicado = this.libro.first_publish_date || 'Desconocido';
+      let texto = this.libro.description?.value || this.libro.description;
+      const titulo = this.libro.title;
+      const publicado = this.libro.first_publish_date || 'Desconocido';
 
         // Esperar a que getAutoresSlug() termine
         const autor = await this.getAutoresSlug();
         this.libro.autor = autor;
 
-        if (texto) {
-          this.translate.traducir(texto).subscribe(traduccionDescription => {
-            this.libro.traduccion = traduccionDescription;
-            this.cdr.detectChanges();
-          });
-          this.translate.traducir(titulo).subscribe(traduccionTitulo => {
-            this.libro.titulo = traduccionTitulo;
-            this.cdr.detectChanges();
-          });
-          this.translate.traducir(publicado).subscribe(traduccionPublicado => {
-            this.libro.publicado = traduccionPublicado;
-            this.cdr.detectChanges();
-          });
+      // Si existe un paréntesis, cortar el texto antes de él
+      if (texto && typeof texto === 'string') {
+        const index = texto.indexOf('([');
+        if (index !== -1) {
+          texto = texto.substring(0, index).trim();
         }
-      },
-      error: (err) => console.error('Error cargando detalle:', err)
-    });
-  }
+      }
+
+      if (texto) {
+        this.translate.traducir(texto).subscribe(traduccionDescription => {
+          this.libro.traduccion = traduccionDescription;
+          this.cdr.detectChanges();
+        });
+        this.translate.traducir(titulo).subscribe(traduccionTitulo => {
+          this.libro.titulo = traduccionTitulo;
+          this.cdr.detectChanges();
+        });
+        this.translate.traducir(publicado).subscribe(traduccionPublicado => {
+          this.libro.publicado = traduccionPublicado;
+          this.cdr.detectChanges();
+        });
+      }
+    },
+    error: (err) => console.error('Error cargando detalle:', err)
+  });
+}
+
+  
 
 
 
@@ -171,22 +189,40 @@ export class LibroPage implements OnInit {
     const id = authorKey.replace('/authors/', '');
     this.router.navigate(['/autor', id]);
   }
+  
+volverAtras() {
+  this.navCtrl.back();
+}
 
-    volverAtras() {
-      this.location.back();
+
+
+  /**
+   * Alterna el estado de favorito de un libro
+   */
+  async toggleFavorito(): Promise<void> {
+    if (!this.libroId) return;
+    try {
+      await this.favService.toggleFavorito(this.libroId);
+    } catch (error) {
+      console.error('Error al alternar favorito:', error);
     }
+  }
 
-
-  async abrirModal(libro: any) {
+  /**
+   * Verifica si el libro actual está en favoritos
+   */
+  esFavorito() {
+    return this.libroId ? this.favService.esFavorito(this.libroId) : false;
+  }
+  async openModal(libro: any) {
     const modal = await this.modalCtrl.create({
       component: ResultadoComponent,
-      cssClass : 'modal', 
       componentProps : {
-        libros : libro
+        libro : libro
       }
     });
     modal.present();
-  }
+   }
 
 
 }

@@ -1,12 +1,12 @@
 <ion-header>
   <ion-toolbar>
-
-    <ion-button fill="clear" (click)="volverAtras()" class="atras">
-      <ion-icon name="chevron-back-outline">
-
+   
+    <ion-button fill="clear" (click)="volverAtras()" class="atras" >
+      <ion-icon name="chevron-back-outline">    
       </ion-icon></ion-button>
 
-    <ion-title style="text-align: center;">{{ libro?.titulo || libro?.title }}</ion-title>
+
+    <ion-title class="titulo">{{ libro?.titulo || libro?.title }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -20,26 +20,35 @@
 
         <ion-card-title>{{ libro?.titulo || libro?.title}}</ion-card-title>
         <ion-card-subtitle *ngIf="libro.traduccion; else cargando">
-          {{ libro.traduccion }}
+          {{ libro.traduccion}}
         </ion-card-subtitle>
         <br>
-        <ion-card-title>Autor</ion-card-title>
-        <ion-card-subtitle>
-          {{ libro.autor }}</ion-card-subtitle>
-        <br>
-        <ion-button *ngIf="libro.authors?.length" fill="clear" (click)="verAutor(libro)">
-          {{ libro.authors[0].author?.key || 'Desconocido' }}
-        </ion-button>
+          <ion-card-title>Autor</ion-card-title>
+         <ion-card-subtitle class="autor">
+
+        {{ libro.autor }}
+
+          <ion-button *ngIf="libro.authors?.length" fill="clear" (click)="verAutor(libro)">
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </ion-button>
+        
+        </ion-card-subtitle>
+             
+        
         <ion-card-title>Primera edición</ion-card-title>
-        <ion-card-subtitle>{{ libro.publicado }}</ion-card-subtitle>
-        <ion-button (click)="abrirModal(libro)">
-          {{libro.title}}
-        </ion-button>
+        <ion-card-subtitle>{{ libro?.publicado || 'Desconocido'}}</ion-card-subtitle>  
+          
       </ion-card-header>
+      <ion-button>
+        
+      </ion-button>
     </ion-card>
   </ng-container>
 
-
+  <ion-button expand="block" (click)="toggleFavorito()" [color]="esFavorito() ? 'danger' : 'tertiary'">
+    <ion-icon [name]="esFavorito() ? 'heart' : 'heart-outline'"></ion-icon>
+      {{ esFavorito() ? 'Quitar de favoritos' : 'Agregar a favoritos' }}
+  </ion-button>
   <ion-button expand="block" (click)="mostrarAlerta()">
     Comprar
   </ion-button>
