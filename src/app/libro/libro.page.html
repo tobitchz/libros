@@ -13,14 +13,10 @@
 <ion-content class="ion-padding">
   <ng-container *ngIf="libro; else cargando">
     <ion-card>
-  <img
-    [src]="libro.covers?.length 
+      <img [src]="libro.covers?.length 
       ? 'https://covers.openlibrary.org/b/id/' + libro.covers[0] + '-L.jpg' 
-      :  'assets/imagenes/sin_portada.jpg'"
-    alt="Portada del libro"
-    class="portada"
-  />
-  <ion-card-header>
+      :  'assets/imagenes/sin_portada.jpg'" alt="Portada del libro" class="portada" />
+      <ion-card-header>
 
         <ion-card-title>{{ libro?.titulo || libro?.title}}</ion-card-title>
         <ion-card-subtitle *ngIf="libro.traduccion; else cargando">
@@ -44,6 +40,9 @@
         <ion-card-subtitle>{{ libro?.publicado || libro?.first_publish_date || 'Desconocido'}}</ion-card-subtitle>  
           
       </ion-card-header>
+      <ion-button (click)="openModal(libro)" expand="block">
+        Ediciones
+      </ion-button>
     </ion-card>
   </ng-container>
 
@@ -54,6 +53,7 @@
   <ion-button expand="block" (click)="mostrarAlerta()">
     Comprar
   </ion-button>
+
 
   <ng-template #cargando>
     <ion-spinner></ion-spinner>

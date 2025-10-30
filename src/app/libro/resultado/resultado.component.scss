@@ -1,0 +1,22 @@
+ion-header{
+    display: flex; 
+    flex-direction: row;
+}
+.contenidoHeader{
+    display: flex;
+    flex-direction: row;
+}
+.portada{
+    width: 15%;
+}
+.detalleLibro{
+    display: flex;
+    flex-direction: row;
+}
+.detalleVariado{
+    padding-left: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
