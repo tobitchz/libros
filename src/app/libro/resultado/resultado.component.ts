@@ -1,6 +1,5 @@
 import { Component, input, OnInit } from '@angular/core';
 import { Input } from '@angular/core';
-import { concatAll } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AlertController, ModalController } from '@ionic/angular';
@@ -15,7 +14,6 @@ export class ResultadoComponent implements OnInit {
   @Input('libros') libros: any
   librosKey: any = []
   key: any = []
-  valor: any
   constructor(
     private http: HttpClient,
     private router: Router,
@@ -28,7 +26,12 @@ export class ResultadoComponent implements OnInit {
     this.getLibroKey(this.libros)
   }
 
-
+/**
+ * @function
+ * @description La finalidad de esta funcion es buscar las ediciones del libro que se paso como parametro del page libro y guardarlas en el array 
+ * librosKey
+ * 
+ */
   getLibroKey(libro: any) {
     const linkAut = this.http.get(`https://openlibrary.org${libro.key}/editions.json`)
     linkAut.subscribe(
@@ -40,7 +43,13 @@ export class ResultadoComponent implements OnInit {
       }
     )
   }
-  async presentAlert(libro: any) {
+
+
+  /**
+   * @function 
+   * @description Lo que  hace esta funcion es buscar la edicion del libro mediante un codigo que tiene guardado el libro
+   */
+  async verEdicion(libro: any) {
     try {
       let codeLibro = libro.source_records[0].split(":")
       console.log(codeLibro)
@@ -93,6 +102,3 @@ export class ResultadoComponent implements OnInit {
   }
 
 }
-
-
-
