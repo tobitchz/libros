@@ -101,6 +101,24 @@ export class AuthService {
   }
 
 
+  /**
+   * @method eliminarCuenta()
+   * 
+   * 
+   * @param password password para reautenticar
+   * 
+   * 
+   * elimina la cuenta del usuario actual
+   * 
+   * verifica que haya usuario logeado y que tenga email, reautentica con password e email (eso lo piide FireBase)
+   *  
+   * borra el usuario en realtime DB
+   * 
+   * elimina la cuenta y cierra la sesion
+   * 
+   */
+
+
   async eliminarCuenta(password: string) {
 
     try {
@@ -137,6 +155,15 @@ export class AuthService {
   }
 
 
+  /**
+   * @method tieneProvider()
+   * 
+   * indica si el usuario actual tiene vinculado el provider de email/password
+   * esto es para saber si se puede cambiar la contrasenia
+   * 
+   * @return devuelve true si tiene provider y false si no 
+   */
+
   async tieneProvider(): Promise<boolean> {
     const user = await this.ngFireAuth.currentUser;
     if (!user) {
@@ -145,6 +172,24 @@ export class AuthService {
     return user.providerData.some(p => p?.providerId === 'password');
   }
 
+  
+
+  /**
+   * 
+   * @method cambiarContrasenia()
+   * 
+   * 
+   * @param passActual password actual del usuario
+   * @param passNueva nueva password a establecer
+   * 
+   * cambia la password del usuario autenticado
+   * 
+   * el usuario debe ya haber iniciado con provider,se debe reautenticar con la password actual
+   * y se valida que la nueva password tenga al menos 6 caracteres
+   * 
+   * 
+   * 
+   */
 
   async cambiarContrasenia(passActual: string, passNueva: string): Promise<void> {
     const user = await this.ngFireAuth.currentUser;
@@ -163,7 +208,7 @@ export class AuthService {
     }
 
 
-    if (!passNueva || passNueva.length < 8) {
+    if (!passNueva || passNueva.length < 6) {
       throw new Error('auth/weak-password');
     }
 
@@ -243,7 +288,17 @@ export class AuthService {
     return await this.ngFireAuth.currentUser;
   }
 
-  async cambiarNombreUsuario(nuevoNombre: string): Promise<void> {
+  /**
+   * @method cambiarNombreUsuario()
+   * 
+   * 
+   * @param nuevoNombre es el nuevo nombre a asignar
+   * 
+   * cambia el nnombre de usuario del perfil actual en FireBase y lo actualiza en
+   * la realtime DB
+   *
+   */
+  async cambiarNombreUsuario(nuevoNombre: string){
     const user = await this.ngFireAuth.currentUser;
     if (!user || !user.uid) throw new Error('no hay usuario logueado');
 
@@ -295,6 +350,27 @@ export class AuthService {
     })
   }
 
+
+
+    /**
+     * 
+     * @method subirFotoDePerfil()
+     * 
+     * sube la foto de perfil autenticado a cloudinary
+     * y actualiza el perfil en Firebase con la nueva url
+     * 
+     * @param blob imagen en formato blob
+     * 
+     *  verifica que exista un usuario autenticado, envia la imagen al cloudinary y recibe
+     *  la url de respuesta
+     * 
+     *  guarda tambienla url en el localStorage 
+     * 
+     * 
+     * use Cloudinary pq FireBase no permite subir archivos directamente y este me parecia mas comodo  
+     * 
+     * 
+     */
   async subirFotoDePerfil(blob: Blob) : Promise<string> {
 
     const user = await this.ngFireAuth.currentUser;

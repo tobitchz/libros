@@ -1,8 +1,39 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
+
+
+/**
+ * estas son las preferencias del tema q se pueden elegir
+ * 
+ * claro, oscuro o segun el SO 
+ * 
+ */
+
 export type ThemePref = 'light' | 'dark' | 'system';
 const STORAGE_KEY = 'theme-preference';
+
+
+
+
+/**
+ * @file theme.ts
+ * @description es un servicio para gestionar el tema de la app
+ * 
+ * guarda la preferencia en el localStorage, detecta cambios del OS y aplica
+ * las clases a css para que cambie de color
+ * 
+ * 
+ * @method setPref() guarda la nueva preferencia
+ * 
+ * @method getPref() devuelve la preferencia acutal
+ * 
+ * 
+ * @method applyPref() actualiza las clases del documento segun el tema
+ * 
+ * 
+ * 
+ */
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
