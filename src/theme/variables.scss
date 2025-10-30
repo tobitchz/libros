@@ -24,10 +24,13 @@
 html.dark,
 body.dark,
 .dark {
-  --ion-background-color: #121418;
+ --ion-background-color: #121418;
   --ion-background-color-rgb: 18,20,24;
   --ion-text-color: #e8e9eb;
   --ion-text-color-rgb: 232,233,235;
+
+  --ion-card-title: #e1e4ea; 
+  --ion-card-subtitle: #b5bac3; 
 
   --ion-card-background: #181b20;
   --ion-item-background: #1a1d22;

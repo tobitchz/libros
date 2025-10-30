@@ -55,3 +55,29 @@ body.dark ion-tab-bar,
 :root { color-scheme: light; }
 html.dark, body.dark, .dark { color-scheme: dark; }
 
+ion-card-title {
+
+  --color: var(--ion-text-color);
+  color: var(--ion-card-title, var(--ion-text-color));
+}
+
+ion-card-subtitle,
+ion-card-content,
+ion-label {
+  color: var(--ion-card-subtitle, #667085);
+}
+
+html.dark ion-card-title,
+body.dark ion-card-title {
+  --color: var(--ion-card-title); 
+  color: var(--ion-card-title);
+}
+
+html.dark ion-card-subtitle,
+body.dark ion-card-subtitle,
+html.dark ion-card-content,
+body.dark ion-card-content {
+  color: var(--ion-card-subtitle);
+}
+
+
