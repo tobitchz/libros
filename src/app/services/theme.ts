@@ -1,0 +1,132 @@
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+
+
+
+/**
+ * estas son las preferencias del tema q se pueden elegir
+ * 
+ * claro, oscuro o segun el SO 
+ * 
+ */
+
+export type ThemePref = 'light' | 'dark' | 'system';
+const STORAGE_KEY = 'theme-preference';
+
+
+
+
+/**
+ * @file theme.ts
+ * @description es un servicio para gestionar el tema de la app
+ * 
+ * guarda la preferencia en el localStorage, detecta cambios del OS y aplica
+ * las clases a css para que cambie de color
+ * 
+ * 
+ * @method setPref() guarda la nueva preferencia
+ * 
+ * @method getPref() devuelve la preferencia acutal
+ * 
+ * 
+ * @method applyPref() actualiza las clases del documento segun el tema
+ * 
+ * 
+ * 
+ */
+
+@Injectable({ providedIn: 'root' })
+export class ThemeService {
+  private pref$ = new BehaviorSubject<ThemePref>('system');
+  pref = this.pref$.asObservable();
+
+  private mediaQuery = typeof window !== 'undefined' && window.matchMedia
+    ? window.matchMedia('(prefers-color-scheme: dark)')
+    : null;
+
+  private mediaListener = (e: MediaQueryListEvent) => {
+    if (this.getPref() === 'system') this.applyPref('system');
+  };
+
+  constructor() {
+    const stored = this.getStoredPref();
+    console.log('[ThemeService] constructor stored=', stored);
+    this.pref$.next(stored);
+    this.applyPref(stored);
+    if (this.mediaQuery) {
+      (this.mediaQuery.addEventListener
+        ? this.mediaQuery.addEventListener('change', this.mediaListener)
+        : (this.mediaQuery as any).addListener?.(this.mediaListener));
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && this.getPref() === 'system') this.applyPref('system');
+    });
+  }
+
+  init() {
+    const pref = this.getPref();
+    this.applyPref(pref);
+  }
+
+  setPref(p: ThemePref) {
+    console.log('[ThemeService] setPref', p);
+    localStorage.setItem(STORAGE_KEY, p);
+    this.pref$.next(p);
+    this.applyPref(p);
+  }
+
+  getPref(): ThemePref {
+    return this.pref$.value;
+  }
+
+  private getStoredPref(): ThemePref {
+    const v = localStorage.getItem(STORAGE_KEY) as ThemePref | null;
+    return v ?? 'system';
+  }
+
+  private applyPref(p: ThemePref) {
+    const isDark =
+      p === 'dark'
+        ? true
+        : p === 'light'
+        ? false
+        : (this.mediaQuery ? this.mediaQuery.matches : false);
+
+    const html = document.documentElement;
+    const body = document.body;
+    const ionApp = document.querySelector('ion-app');
+
+    [html, body, ionApp].forEach((el) => {
+      if (!el) return;
+      el.classList.remove('dark', 'light');
+    });
+
+    if (isDark) {
+      html.classList.add('dark');
+      body.classList.add('dark');
+      ionApp?.classList.add('dark');
+    } else if (p === 'light') {
+      html.classList.add('light');
+      body.classList.add('light');
+      ionApp?.classList.add('light');
+    }
+
+    html.style.colorScheme = isDark ? 'dark' : 'light';
+
+    console.log('[ThemeService] applyPref', {
+      p, isDark,
+      classes: {
+        html: html.className, body: body.className, ionApp: ionApp?.className
+      }
+    });
+  }
+
+  destroy() {
+    if (this.mediaQuery) {
+      (this.mediaQuery.removeEventListener
+        ? this.mediaQuery.removeEventListener('change', this.mediaListener)
+        : (this.mediaQuery as any).removeListener?.(this.mediaListener));
+    }
+  }
+}
