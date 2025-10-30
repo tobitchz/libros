@@ -9,6 +9,7 @@ import { LibroPageRoutingModule } from './libro-routing.module';
 import { LibroPage } from './libro.page';
 
 import { HttpClientModule } from '@angular/common/http';
+import { ResultadoComponent } from './resultado/resultado.component';
 
 @NgModule({
   imports: [
@@ -18,6 +19,6 @@ import { HttpClientModule } from '@angular/common/http';
     LibroPageRoutingModule,
     HttpClientModule
   ],
-  declarations: [LibroPage]
+  declarations: [LibroPage, ResultadoComponent]
 })
 export class LibroPageModule {}

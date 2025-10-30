@@ -7,6 +7,8 @@ import { Translate } from '../services/translate';
 import { Router } from '@angular/router';
 import { NavController } from '@ionic/angular';
 import { FavoritosService } from '../services/favoritos.service';
+import { ModalController } from '@ionic/angular';
+import { ResultadoComponent } from './resultado/resultado.component';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
@@ -40,7 +42,8 @@ export class LibroPage implements OnInit {
     private translate: Translate,
     private router: Router,
     private navCtrl: NavController,
-    public favService: FavoritosService
+    public favService: FavoritosService,
+    public modalCtrl : ModalController
     
   ) {
 const nav = this.router.getCurrentNavigation();
@@ -61,11 +64,10 @@ const nav = this.router.getCurrentNavigation();
       this.libroId = params.get('id');
       const id = params.get('id');
       let tipo = params.get('tipo');
-       if (tipo == null)
-    {
-      tipo = 'works'
-    }
-    if (id) this.getLibroDetalle(id, tipo);
+      if (tipo == null) {
+        tipo = 'works'
+      }
+      if (id) this.getLibroDetalle(id, tipo);
     });
   }
 
@@ -73,8 +75,8 @@ const nav = this.router.getCurrentNavigation();
    * Obtiene los datos detallados del libro en español desde la API de OpenLibrary. 
    * @param {string} id - Identificador del libro (por ejemplo, "OL12345W").
    */
-getLibroDetalle(id: string, tipo: string) {
-  const url = `https://openlibrary.org/${tipo}/${id}.json`;
+  getLibroDetalle(id: string, tipo: string) {
+    const url = `https://openlibrary.org/${tipo}/${id}.json`;
 
   this.http.get(url).subscribe({
     next: async (data) => { // <--- marcá el callback como async
@@ -86,9 +88,9 @@ getLibroDetalle(id: string, tipo: string) {
       const titulo = this.libro.title;
       const publicado = this.libro.first_publish_date || 'Desconocido';
 
-      // Esperar a que getAutoresSlug() termine
-      const autor = await this.getAutoresSlug();
-      this.libro.autor = autor;
+        // Esperar a que getAutoresSlug() termine
+        const autor = await this.getAutoresSlug();
+        this.libro.autor = autor;
 
       // Si existe un paréntesis, cortar el texto antes de él
       if (texto && typeof texto === 'string') {
@@ -144,7 +146,7 @@ getLibroDetalle(id: string, tipo: string) {
           const authorId = fullKey.split('/').pop(); 
           const authorData: any = await this.http.get(`https://openlibrary.org/authors/${authorId}.json`).toPromise();
           return authorData.name.normalize('NFD')
-            .replace(/\s+/g, ' ');             
+            .replace(/\s+/g, ' ');
         } catch (e) {
           console.error('Error cargando autor', a.key, e);
           return '';
@@ -182,6 +184,12 @@ getLibroDetalle(id: string, tipo: string) {
           text: 'Amazon',
           handler: () => {
             window.open('https://www.amazon.es/s?k=' + titulo + '-' + autor);
+          }
+        },
+        {
+          text:'Better Worls Books',
+          handler: ()=>{
+            window.open('https://www.betterworldbooks.com/search/results?q='+ titulo + '%20' + autor) 
           }
         }
       ]
@@ -294,6 +302,8 @@ volverAtras() {
   this.navCtrl.back();
 }
 
+
+
   /**
    * Alterna el estado de favorito de un libro
    */
@@ -312,6 +322,16 @@ volverAtras() {
   esFavorito() {
     return this.libroId ? this.favService.esFavorito(this.libroId) : false;
   }
+
+  async openModal(libro: any) {
+    const modal = await this.modalCtrl.create({
+      component: ResultadoComponent,
+      componentProps : {
+        libros : libro
+      }
+    });
+    modal.present();
+   }
 
 
 }
