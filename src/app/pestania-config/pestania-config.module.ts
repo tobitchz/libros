@@ -6,12 +6,13 @@ import { RouterModule } from '@angular/router';
 
 import { PestaniaConfigPage } from './pestania-config.page';
 import { ModalTemaComponent } from './modal-tema/modal-tema.component';
+import { ModalCuentaComponent } from './modal-cuenta/modal-cuenta.component';
 
 @NgModule({
   declarations: [
     PestaniaConfigPage,
     ModalTemaComponent,
-    
+    ModalCuentaComponent
   ],
   imports: [
     CommonModule,

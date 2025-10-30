@@ -6,12 +6,9 @@
     <h2>Seleccionar tema</h2>
     <p>Elegi cómo queres ver la app</p>
   </div>
-
-
-<ion-radio-group [(ngModel)]="seleccionado">
+  <ion-radio-group value="options">
     <ion-list lines="none" class="opciones">
-
-      <ion-item button detail="false" (click)="seleccionado='system'">
+      <ion-item button detail="false">
         <ion-icon name="phone-portrait-outline" slot="start"></ion-icon>
         <ion-label>
           <h3>Sistema</h3>
@@ -20,7 +17,7 @@
         <ion-radio value="system" slot="end"></ion-radio>
       </ion-item>
 
-      <ion-item button detail="false" (click)="seleccionado='light'">
+      <ion-item button detail="false">
         <ion-icon name="sunny-outline" slot="start"></ion-icon>
         <ion-label>
           <h3>Claro</h3>
@@ -29,9 +26,7 @@
         <ion-radio value="light" slot="end"></ion-radio>
       </ion-item>
 
-
-
-      <ion-item button detail="false" (click)="seleccionado='dark'">
+      <ion-item button detail="false">
         <ion-icon name="moon-outline" slot="start"></ion-icon>
         <ion-label>
           <h3>Oscuro</h3>
@@ -39,9 +34,7 @@
         </ion-label>
         <ion-radio value="dark" slot="end"></ion-radio>
       </ion-item>
-
     </ion-list>
-
 
     <div class="acciones">
       <ion-button fill="clear" (click)="cancel()">Cancelar</ion-button>

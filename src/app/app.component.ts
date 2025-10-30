@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { ThemeService } from './services/theme';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +7,5 @@ import { ThemeService } from './services/theme';
   standalone: false,
 })
 export class AppComponent {
-
-  constructor(private themeService: ThemeService) {
-  }
+  constructor() {}
 }
