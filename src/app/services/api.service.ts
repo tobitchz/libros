@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, map, of } from 'rxjs';
 import { Libro } from '../models/libro.model';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -12,7 +13,9 @@ export class ApiService {
     private http: HttpClient,
   ) { }
 
+
   /**
+   * @method buscarLibros
    * @description Busca y obtiene libros de la API OpenLibrary.
    * @param title Título del libro buscado (obligatorio)
    * @param limit Cantidad máxima de resultados (por defecto: "10")
@@ -53,8 +56,10 @@ export class ApiService {
       );
   }
 
+
   /**
-   * Obtiene los datos de una obra desde la API de OpenLibrary.
+   * @method getWork
+   * @description Obtiene los datos de una obra desde la API de OpenLibrary.
    * @param {string} id - Identificador del libro (por ejemplo, "OL12345W").
   */
   getWork(id: string) {
@@ -68,8 +73,10 @@ export class ApiService {
       )
   }
 
+
   /**
-   * Obtiene los datos de una obra desde la API de OpenLibrary.
+   * @method getLibro
+   * @description Obtiene los datos de una obra desde la API de OpenLibrary.
    * @param {string} id Identificador de libro (por ejemplo, "OL12345W").
    */
   async getLibro(id: string) {
@@ -83,8 +90,10 @@ export class ApiService {
       ).toPromise();
   }
 
+
   /**
-   * Obtiene un listado de libros de la API de OpenLibrary
+   * @method getLibros
+   * @description Obtiene un listado de libros de la API de OpenLibrary
    * @param librosIds Array de IDs de libros
    * @returns Array de libros con datos
    */

@@ -3,6 +3,7 @@ import { FirebaseDatabaseService } from './firebase-database.service';
 import { Libro } from '../models/libro.model';
 import { ApiService } from './api.service';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +21,8 @@ export class FavoritosService {
   }
 
   /**
-   * Inicializa el servicio cargando los favoritos
+   * @method inicializar
+   * @description Inicializa el servicio cargando los favoritos
    */
   private async inicializar(): Promise<void> {
     if (this.inicializado) return;
@@ -40,7 +42,8 @@ export class FavoritosService {
   }
 
   /**
-   * Carga los favoritos desde la base de datos
+   * @method cargarFavoritos
+   * @description Carga los favoritos desde la base de datos
    */
   private async cargarFavoritos(): Promise<void> {
     try {
@@ -61,7 +64,8 @@ export class FavoritosService {
   }
 
   /**
-   * Obtiene los IDs de favoritos desde la base de datos
+   * @method obtenerIdsFavoritosDB
+   * @description Obtiene los IDs de favoritos desde la base de datos
    */
   private async obtenerIdsFavoritosDB(): Promise<string[]> {
     try {
@@ -74,7 +78,8 @@ export class FavoritosService {
   }
 
   /**
-   * Obtiene favoritos desde localStorage (fallback)
+   * @method obtenerFavoritosLS
+   * @description Obtiene favoritos desde localStorage (fallback)
    */
   private obtenerFavoritosLS(): Libro[] {
     try {
@@ -90,7 +95,8 @@ export class FavoritosService {
   }
 
   /**
-   * Actualiza localStorage con los favoritos actuales
+   * @method actualizarLocalStorage
+   * @description Actualiza localStorage con los favoritos actuales
    */
   private actualizarLocalStorage(): void {
     try {
@@ -101,21 +107,24 @@ export class FavoritosService {
   }
 
   /**
-   * Obtiene todos los libros favoritos
+   * @method obtenerFavoritos
+   * @description Obtiene todos los libros favoritos
    */
   obtenerFavoritos(): Libro[] {
     return [...this.favoritos];
   }
 
   /**
-   * Obtiene un libro favorito específico
+   * @method obtenerFavorito
+   * @description Obtiene un libro favorito específico
    */
   obtenerFavorito(libroId: string): Libro | null {
     return this.favoritos.find(libro => libro.id === libroId) || null;
   }
 
   /**
-   * Agrega un libro a favoritos
+   * @method agregarFavorito
+   * @description Agrega un libro a favoritos
    */
   async agregarFavorito(libroId: string): Promise<void> {
     if (this.esFavorito(libroId)) {
@@ -143,7 +152,8 @@ export class FavoritosService {
   }
 
   /**
-   * Elimina un libro de favoritos
+   * @method eliminarFavorito
+   * @description Elimina un libro de favoritos
    */
   async eliminarFavorito(libroId: string): Promise<void> {
     if (!this.esFavorito(libroId)) {
@@ -166,7 +176,8 @@ export class FavoritosService {
   }
 
   /**
-   * Alterna el estado de favorito de un libro
+   * @method toggleFavorito
+   * @description Alterna el estado de favorito de un libro
    */
   async toggleFavorito(libroId: string): Promise<void> {
     if (this.esFavorito(libroId)) {
@@ -177,14 +188,16 @@ export class FavoritosService {
   }
 
   /**
-   * Verifica si un libro es favorito
+   * @method esFavorito
+   * @description Verifica si un libro es favorito
    */
   esFavorito(libroId: string): boolean {
     return this.favoritos.some(libro => libro.id === libroId);
   }
 
   /**
-   * Elimina todos los favoritos
+   * @method limpiarFavoritos
+   * @description Elimina todos los favoritos
    */
   async limpiarFavoritos(): Promise<void> {
     this.mensajeError = '';
@@ -201,7 +214,8 @@ export class FavoritosService {
   }
 
   /**
-   * Recarga los favoritos desde la base de datos
+   * @method recargarFavoritos
+   * @description Recarga los favoritos desde la base de datos
    */
   async recargarFavoritos(): Promise<void> {
     this.cargando = true;
@@ -218,7 +232,8 @@ export class FavoritosService {
   }
 
   /**
-   * Estado de carga
+   * @method estaCargando
+   * @description Estado de carga
    */
   estaCargando(): boolean {
     return this.cargando;

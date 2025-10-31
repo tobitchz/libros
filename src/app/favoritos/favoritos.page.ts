@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FavoritosService } from '../services/favoritos.service';
 import { Router } from '@angular/router';
 
+
 @Component({
   selector: 'app-favoritos',
   templateUrl: './favoritos.page.html',
@@ -15,8 +16,11 @@ export class FavoritosPage {
     public favService: FavoritosService
   ) { }
 
+
   /**
-   * Alterna el estado de favorito de un libro
+   * @method toggleFavorito
+   * @description Alterna el estado de favorito de un libro
+   * @param libroId ID de libro a agregar/quitar
    */
   async toggleFavorito(libroId: string): Promise<void> {
     if (!libroId) return;
@@ -27,8 +31,10 @@ export class FavoritosPage {
     }
   }
 
+
   /**
-   * Agrega un libro a favoritos
+   * @method agregarFavorito
+   * @description Agrega un libro a favoritos
    * @param libroId ID de libro a agregar
    */
   async agregarFavorito(libroId: string): Promise<void> {
@@ -40,8 +46,10 @@ export class FavoritosPage {
     }
   }
 
+
   /**
-   * Elimina un libro de favoritos
+   * @method eliminarFavorito
+   * @description Elimina un libro de favoritos
    * @param libroId ID de libro a eliminar
    */
   async eliminarFavorito(libroId: string): Promise<void> {
@@ -53,42 +61,48 @@ export class FavoritosPage {
     }
   }
 
+
   /**
-   * Recarga los favoritos desde la base de datos
+   * @method recargarFavoritos
+   * @description Recarga los favoritos desde la base de datos
    */
   async recargarFavoritos(): Promise<void> {
     try {
       await this.favService.recargarFavoritos();
       console.log('Favoritos recargados');
-      // this.mostrarMensaje('Favoritos actualizados');
     } catch (error) {
       console.error('Error al recargar favoritos:', error);
     }
   }
 
+
   /**
-   * Limpia el mensaje de error
+   * @method limpiarError
+   * @description Limpia el mensaje de error
    */
   limpiarError(): void {
     this.favService.mensajeError = '';
   }
 
+
   /**
-   * Limpia todos los favoritos
+   * @method limpiarTodosFavoritos
+   * @description Limpia todos los favoritos
    */
   async limpiarTodosFavoritos(): Promise<void> {
     try {
       await this.favService.limpiarFavoritos();
       console.log('Todos los favoritos eliminados');
-      // this.mostrarMensaje('Favoritos eliminados');
     } catch (error) {
       console.error('Error al limpiar favoritos:', error);
     }
   }
 
+
   /**
-   * Redirige a la vista de detalle del libro seleccionado.
-   * @param {any} libroId - Objeto que contiene los datos del libro seleccionado.
+   * @method verDetalle
+   * @description Redirige a la vista de detalle del libro seleccionado.
+   * @param libroId ID de libro a eliminar
    */
   verDetalle(libroId: any) {
     this.router.navigate(['/libro', { id: libroId, tipo: "works" }]);

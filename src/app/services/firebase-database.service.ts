@@ -2,10 +2,7 @@ import { Injectable } from '@angular/core';
 import { getDatabase, ref, get, update, set, remove } from "firebase/database";
 import { AuthService } from './auth';
 
-/**
- * Servicio que realiza operaciones con Firebase Realtime Database.
- * Siempre autentifica al usuario antes de operar.
- */
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,8 +13,10 @@ export class FirebaseDatabaseService {
     private authService: AuthService
   ) { }
 
+
   /**
-   * Obtiene la referencia a la ruta del usuario actual
+   * @method getUserRef
+   * @description Obtiene la referencia a la ruta del usuario actual
    * @param path Ruta adicional dentro del nodo del usuario (opcional)
    * @returns Referencia a la base de datos
    */
@@ -30,8 +29,10 @@ export class FirebaseDatabaseService {
     return ref(this.db, fullPath);
   }
 
+
   /**
-   * Obtiene un campo específico del usuario actual
+   * @method getUserData
+   * @description Obtiene un campo específico del usuario actual
    * @param path Campo a obtener (ej: 'email', 'favoritos')
    * @returns Promesa con el valor del campo
    */
@@ -49,8 +50,10 @@ export class FirebaseDatabaseService {
     }
   }
 
+
   /**
-   * Agrega datos al usuario actual
+   * @method updateUserData
+   * @description Agrega datos al usuario actual
    * @param data datos a agregar
    */
   async updateUserData(data: any, path: string = ""): Promise<void> {
@@ -63,8 +66,10 @@ export class FirebaseDatabaseService {
     }
   }
 
+
   /**
-   * Elimina datos en una ruta específica del usuario actual
+   * @method deleteUserData
+   * @description Elimina datos en una ruta específica del usuario actual
    * @param path Ruta a eliminar (ej: 'favoritos/0')
    */
   async deleteUserData(path: string = ""): Promise<void> {
@@ -77,8 +82,10 @@ export class FirebaseDatabaseService {
     }
   }
 
+
   /**
-   * Establece/sobrescribe datos de una ruta específica
+   * @method setUserData
+   * @description Establece/sobrescribe datos de una ruta específica
    * @param data Datos a establecer
    * @param path Ruta donde establecer los datos
    */
@@ -92,22 +99,10 @@ export class FirebaseDatabaseService {
     }
   }
 
-  // /**
-  //  * Actualiza el email del usuario actual
-  //  * @param email Nuevo email
-  //  * @returns Promesa de la operación
-  //  */
-  // async updateEmail(email: string): Promise<void> {
-  //   try {
-  //     return await this.updateUserData({ email });
-  //   } catch (error) {
-  //     console.error('Error al actualizar email:', error);
-  //     throw error;
-  //   }
-  // }
 
   /**
-   * Establece datos iniciales para un nuevo usuario
+   * @method setInitialUserData
+   * @description Establece datos iniciales para un nuevo usuario
    * @param userId ID del usuario
    * @param email Email del usuario
    */
