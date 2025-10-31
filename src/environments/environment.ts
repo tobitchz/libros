@@ -32,8 +32,6 @@ export const environment = {
 // import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
 
 
-
-// Initialize Firebase
 const app = initializeApp(environment.firebaseConfig);
 
 const auth = getAuth();
@@ -49,4 +47,3 @@ export class ControladorR {
   constructor(private ruta:Router){}
 }
 
-//al final no lo use (todo va en authService)
