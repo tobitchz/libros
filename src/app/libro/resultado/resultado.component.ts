@@ -27,7 +27,7 @@ export class ResultadoComponent implements OnInit {
   }
 
 /**
- * @function
+ * @function getLibroKey
  * @description La finalidad de esta funcion es buscar las ediciones del libro que se paso como parametro del page libro y guardarlas en el array 
  * librosKey
  * 
@@ -46,7 +46,7 @@ export class ResultadoComponent implements OnInit {
 
 
   /**
-   * @function 
+   * @function verEdicion
    * @description Lo que  hace esta funcion es buscar la edicion del libro mediante un codigo que tiene guardado el libro
    */
   async verEdicion(libro: any) {
